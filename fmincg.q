@@ -4,6 +4,7 @@ INT:.1; / don't reevaluate within 0.1 of the limit of the current bracket
 EXT:3f; / extrapolate maximum 3 times the current bracket
 MAX:20; / max 20 function evaluations per line search
 RATIO:100; / maximum allowed slope ratio
+REALMIN:2.2251e-308;
 
 quadfit:{[f2;f3;d3;z3]z3-(.5*d3*z3*z3)%(f2-f3)+d3*z3}
 cubicfit:{[f2;f3;d3;z3]
@@ -44,7 +45,7 @@ fmincg:{[length;f;X]            / length can default to 100
    while[(M>0) & (f2 > f1+z1*RHO*d1) | d2 > neg SIG*d1;
     limit:z1;                   / tighten the bracket
     z2:$[f2>f1;quadfit;cubicfit][f2;f3;d3;z3];
-    if[z2 in 0n -0w 0w;z2:.5*z2]; / if we had a numerical problem then bisect
+    if[z2 in 0n -0w 0w;z2:.5*z3]; / if we had a numerical problem then bisect
     z2:(z3*1f-INT)|z2&INT*z3;     / don't accept too close to limits
     z1+:z2;
     X+:z2$s;
@@ -78,7 +79,7 @@ fmincg:{[length;f;X]            / length can default to 100
    tmp:df1;df1:df2;df2:tmp;     / swap derivatives
    d2:flip[df1]$s;
    if[d2>0;s:neg df1;d2:flip[neg s]$s]; / new slope must be negative, otherwise use steepest direction
-   z1*:RATIO&d1%d2-2.2251e-308;         / slope ratio but max RATIO
+   z1*:RATIO&d1%d2-REALMIN;             / slope ratio but max RATIO
    d1:d2;
    ls_failed:0b;                / this line search did not fail
    ];
