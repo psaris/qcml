@@ -23,8 +23,8 @@ fmincg:{[length;f;X]            / length can default to 100
  i:0;                           / zero the run length counter
  ls_failed:0b;                  / no previous line search has failed
  fX:();
- f1:first df1:f X;df1:last df1; / get function value and gradient
- s:neg df1;                     / search direction is steepest
+ f1:f X;                        / get function value and gradient
+ s:neg f1 1;                    / search direction is steepest
  d1:neg flip[s]$s;              / this is the slope
  z1:(length,:1f)[1]%1f-d1;      / initial step is red/(|s|+1)
  length@:0;                     / length is first element
@@ -32,62 +32,62 @@ fmincg:{[length;f;X]            / length can default to 100
 
  while[i<abs length;            / while not finished
   i+:length>0;                  / count iterations?!
-  X0:X;f0:f1;df0:df1;           / make a copy of current values
+  X0:X;f0:f1;                   / make a copy of current values
   X+:z1$s;                      / begin line search
-  f2:first df2:f X;df2:last df2;
+  f2:f X;
   i+:length<0;                  / count epochs?!
-  d2:flip[df2]$s;
-  f3:f1;d3:d1;z3:neg z1;        / initialize point 3 equal to point 1
+  d2:flip[f2 1]$s;
+  f3:f1 0;d3:d1;z3:neg z1;        / initialize point 3 equal to point 1
   M:$[length>0;MAX;MAX&neg length-i];
   success:0b;limit:-1;          / initialize quantities
   BREAK:0b;
   while[not BREAK;
-   while[(M>0) & (f2 > f1+z1*RHO*d1) | d2 > neg SIG*d1;
+   while[(M>0) & (f2[0] > f1[0]+z1*RHO*d1) | d2 > neg SIG*d1;
     limit:z1;                   / tighten the bracket
-    z2:$[f2>f1;quadfit;cubicfit][f2;f3;d3;z3];
+    z2:$[f2[0]>f1[0];quadfit;cubicfit][f2 0;f3;d3;z3];
     if[z2 in 0n -0w 0w;z2:.5*z3]; / if we had a numerical problem then bisect
     z2:(z3*1f-INT)|z2&INT*z3;     / don't accept too close to limits
     z1+:z2;
     X+:z2$s;
-    f2:first df2:f X;df2:last df2;
+    f2:f X;
     M-:1;i+:length<0;           / count epochs?!
-    d2:flip[df2]$s;
+    d2:flip[f2 1]$s;
     z3-:z2;                 / z3 is now relative to the location of z2
     ];
-   if[(d2>d1*neg SIG)|f2>f1+d1*RHO*z1;BREAK:1b]; / this is a failure
+   if[(d2>d1*neg SIG)|f2[0]>f1[0]+d1*RHO*z1;BREAK:1b]; / this is a failure
    if[d2>SIG*d1;success:1b;BREAK:1b];            / success
    if[M=0;BREAK:1b];                             / failure
    if[not BREAK;
-    z2:cubicextrapolation[f2;f3;d3;z3];
+    z2:cubicextrapolation[f2 0;f3;d3;z3];
     z2:$[(z2<0)|z2=0w;$[limit<=.5;z1*EXT-1f;.5*limit-z1];
      (limit>-.5)&limit<z2+z1;.5*limit-z1; / extraplation beyond max? -> bisect
      (limit<-.5)&(z1*EXT)<z2+z1;z1*EXT-1f; / extraplation beyond limit -> set to limit
      z2<z3*neg INT;z3*neg INT;
      (limit>-.5)&(z2<(limit-z1)*1f-INT);(limit-z1)*1f-INT; / too clost to limit?
      z2];
-    f3:f2;d3:d2;z3:neg z2;      / set point 3 equal to point 2
+    f3:f2 0;d3:d2;z3:neg z2;      / set point 3 equal to point 2
     z1+:z2;X+:z2*s;             / update current estimates
-    f2:first df2:f X;df2:last df2;
+    f2:f X;
     M-:1;i+:length<0;           / count epochs?!
-    d2:flip[df2]$s;
+    d2:flip[f2 1]$s;
     ];
    ];
   if[success;
-   f1:f2;fX:flip flip[fX],'f1;
-   show "Iteration ",string[i]," | Cost: ", string f1;
-   s:(((flip[df2]$df2)-flip[df1]$df2)%((flip[df1]$df1)$s))-df2; / Polack-Ribiere direction
-   tmp:df1;df1:df2;df2:tmp;     / swap derivatives
-   d2:flip[df1]$s;
-   if[d2>0;s:neg df1;d2:flip[neg s]$s]; / new slope must be negative, otherwise use steepest direction
+   f1:f2;fX:flip flip[fX],'f1 0;
+   show "Iteration ",string[i]," | Cost: ", string f1 0;
+   s:(((flip[f2 1]$f2 1)-flip[f1 1]$f2 1)%((flip[f1 1]$f1 1)$s))-f2 1; / Polack-Ribiere direction
+   tmp:f1 1;f1[1]:f2 1;f2[1]:tmp; / swap derivatives
+   d2:flip[f1 1]$s;
+   if[d2>0;s:neg f1 1;d2:flip[neg s]$s]; / new slope must be negative, otherwise use steepest direction
    z1*:RATIO&d1%d2-REALMIN;             / slope ratio but max RATIO
    d1:d2;
    ls_failed:0b;                / this line search did not fail
    ];
   if[not success;
-   X:X0;f1:f0;df1:df0;  / restore point from before failed line search
+   X:X0;f1:f0;          / restore point from before failed line search
    if[ls_failed|i>abs length;:(X;fX;i)]; / line search failed twice in a row or we ran out of time, so we give up
-   tmp:df1;df1:df2;df2:tmp;              / swap derivatives
-   s:neg df1;                            / try steepest
+   tmp:f1 1;f1[1]:f2 1;f2[1]:tmp;        / swap derivatives
+   s:neg f1 1;                           / try steepest
    d1:neg[flip s]$s;
    z1:1f%1f-d1;
    ls_failed:1b;                / this line search failed
