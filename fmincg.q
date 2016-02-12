@@ -1,10 +1,10 @@
-RHO:.01; / a bunch of constants for line searches
-SIG:.5; / RHO and SIG are the constants in the Wolfe-Powell conditions
-INT:.1; / don't reevaluate within 0.1 of the limit of the current bracket
-EXT:3f; / extrapolate maximum 3 times the current bracket
-MAX:20; / max 20 function evaluations per line search
-RATIO:100; / maximum allowed slope ratio
-REALMIN:2.2251e-308;
+RHO:.01 / a bunch of constants for line searches
+SIG:.5  / RHO and SIG are the constants in the Wolfe-Powell conditions
+INT:.1 / don't reevaluate within 0.1 of the limit of the current bracket
+EXT:3f / extrapolate maximum 3 times the current bracket
+MAX:20 / max 20 function evaluations per line search
+RATIO:100 / maximum allowed slope ratio
+REALMIN:2.2251e-308
 
 quadfit:{[f2;f3;d3;z3]z3-(.5*d3*z3*z3)%(f2-f3)+d3*z3}
 cubicfit:{[f2;f3;d3;z3]
@@ -37,12 +37,12 @@ fmincg:{[length;f;X]            / length can default to 100
   f2:f X;
   i+:length<0;                  / count epochs?!
   d2:flip[f2 1]$s;
-  f3:f1 0;d3:d1;z3:neg z1;        / initialize point 3 equal to point 1
+  f3:f1 0;d3:d1;z3:neg z1;      / initialize point 3 equal to point 1
   M:$[length>0;MAX;MAX&neg length-i];
   success:0b;limit:-1;          / initialize quantities
   BREAK:0b;
   while[not BREAK;
-   while[(M>0) & (f2[0] > f1[0]+z1*RHO*d1) | d2 > neg SIG*d1;
+   while[$[M>0;$[f2[0]>f1[0]+z1*RHO*d1;1b;d2>neg SIG*d1;1b;0b];0b]
     limit:z1;                   / tighten the bracket
     z2:$[f2[0]>f1[0];quadfit;cubicfit][f2 0;f3;d3;z3];
     if[z2 in 0n -0w 0w;z2:.5*z3]; / if we had a numerical problem then bisect
@@ -54,18 +54,18 @@ fmincg:{[length;f;X]            / length can default to 100
     d2:flip[f2 1]$s;
     z3-:z2;                 / z3 is now relative to the location of z2
     ];
-   if[(d2>d1*neg SIG)|f2[0]>f1[0]+d1*RHO*z1;BREAK:1b]; / this is a failure
+   if[$[d2>d1*neg SIG;1b;f2[0]>f1[0]+d1*RHO*z1];BREAK:1b]; / this is a failure
    if[d2>SIG*d1;success:1b;BREAK:1b];            / success
    if[M=0;BREAK:1b];                             / failure
    if[not BREAK;
     z2:cubicextrapolation[f2 0;f3;d3;z3];
-    z2:$[(z2<0)|z2=0w;$[limit<=.5;z1*EXT-1f;.5*limit-z1];
-     (limit>-.5)&limit<z2+z1;.5*limit-z1; / extraplation beyond max? -> bisect
-     (limit<-.5)&(z1*EXT)<z2+z1;z1*EXT-1f; / extraplation beyond limit -> set to limit
+    z2:$[$[z2<0;1b;z2=0w];$[limit<=.5;z1*EXT-1f;.5*limit-z1];
+     $[limit>-.5;limit<z2+z1;0b];.5*limit-z1; / extraplation beyond max? -> bisect
+     $[limit<-.5;(z1*EXT)<z2+z1;0b];z1*EXT-1f; / extraplation beyond limit -> set to limit
      z2<z3*neg INT;z3*neg INT;
-     (limit>-.5)&(z2<(limit-z1)*1f-INT);(limit-z1)*1f-INT; / too clost to limit?
+     $[limit>-.5;z2<(limit-z1)*1f-INT;0b];(limit-z1)*1f-INT; / too clost to limit?
      z2];
-    f3:f2 0;d3:d2;z3:neg z2;      / set point 3 equal to point 2
+    f3:f2 0;d3:d2;z3:neg z2;    / set point 3 equal to point 2
     z1+:z2;X+:z2*s;             / update current estimates
     f2:f X;
     M-:1;i+:length<0;           / count epochs?!
@@ -79,7 +79,7 @@ fmincg:{[length;f;X]            / length can default to 100
    tmp:f1 1;f1[1]:f2 1;f2[1]:tmp; / swap derivatives
    d2:flip[f1 1]$s;
    if[d2>0;s:neg f1 1;d2:flip[neg s]$s]; / new slope must be negative, otherwise use steepest direction
-   z1*:RATIO&d1%d2-REALMIN;             / slope ratio but max RATIO
+   z1*:RATIO&d1%d2-REALMIN;              / slope ratio but max RATIO
    d1:d2;
    ls_failed:0b;                / this line search did not fail
    ];
