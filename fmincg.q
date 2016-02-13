@@ -6,7 +6,7 @@ MAX:20 / max 20 function evaluations per line search
 RATIO:100 / maximum allowed slope ratio
 REALMIN:2.2251e-308
 
-polackribiere:{[df1;df2;s](((flip[df2]$df2)-flip[df1]$df2)%((flip[df1]$df1)$s))-df2}
+polackribiere:{[df1;df2;s](((df2$df2)-df1$df2)%((df1$df1)$s))-df2}
 quadfit:{[f2;f3;d3;z3]z3-(.5*d3*z3*z3)%(f2-f3)+d3*z3}
 cubicfit:{[f2;f3;d3;z3]
  A:(6f*(f2-f3)%z3)+3f*d2+d3;
@@ -26,7 +26,7 @@ minimize:{[f;d;z;s;F;X]
  z[1]+:z[2];
  X+:z[2]$s;
  f[2]:F X;
- d[2]:flip[f[2;1]]$s;
+ d[2]:f[2;1]$s;
  z[3]-:z[2];                / z3 is now relative to the location of z2
  (f;d;z;X)}
 
@@ -41,7 +41,7 @@ extrapolate:{[f;d;z;s;F;X]
  f[3]:f[2];d[3]:d[2];z[3]:neg z[2]; / set point 3 equal to point 2
  z[1]+:z[2];X+:z[2]*s;              / update current estimates
  f[2]:F X;
- d[2]:flip[f[2;1]]$s;
+ d[2]:f[2;1]$s;
  (f;d;z;X)}
 
 / TODO: rename length -> n
@@ -54,7 +54,7 @@ fmincg:{[length;F;X]            / length can default to 100
  d:4#0n;                        / make room for d0, d1, d2 and d3
  f[1]:F X;                      / get function value and gradient
  s:neg f[1;1];                  / search direction is steepest
- d[1]:neg flip[s]$s;            / this is the slope
+ d[1]:neg s$s;            / this is the slope
  z[1]:(length,:1f)[1]%1f-d[1];  / initial step is red/(|s|+1)
  length@:0;                     / length is first element
  i+:length<0;                   / count epochs?!
@@ -65,7 +65,7 @@ fmincg:{[length;F;X]            / length can default to 100
   X+:z[1]$s;                    / begin line search
   f[2]:F X;
   i+:length<0;                  / count epochs?!
-  d[2]:flip[f[2] 1]$s;
+  d[2]:f[2;1]$s;
   f[3]:f[1];d[3]:d[1];z[3]:neg z[1]; / initialize point 3 equal to point 1
   M:$[length>0;MAX;MAX&neg length-i];
   success:0b;limit:-1;          / initialize quantities
@@ -89,8 +89,8 @@ fmincg:{[length;F;X]            / length can default to 100
    show "Iteration ",string[i]," | Cost: ", string f[1;0];
    s:polackribiere[f[1;1];f[2;1];s];    / Polack-Ribiere direction
    tmp:f[1;1];f[1;1]:f[2;1];f[2;1]:tmp; / swap derivatives
-   d[2]:flip[f[1;1]]$s;
-   if[d[2]>0;s:neg f[1;1];d[2]:flip[neg s]$s]; / new slope must be negative, otherwise use steepest direction
+   d[2]:f[1;1]$s;
+   if[d[2]>0;s:neg f[1;1];d[2]:neg[s]$s]; / new slope must be negative, otherwise use steepest direction
    z[1]*:RATIO&d[1]%d[2]-REALMIN; / slope ratio but max RATIO
    d[1]:d[2];
    ];
@@ -99,7 +99,7 @@ fmincg:{[length;F;X]            / length can default to 100
    if[$[ls_failed;1b;i>abs length];:(X;fX;i)]; / line search failed twice in a row or we ran out of time, so we give up
    tmp:f[1;1];f[1;1]:f[2;1];f[2;1]:tmp;        / swap derivatives
    s:neg f[1;1];                               / try steepest
-   d1:neg[flip s]$s;
+   d1:neg[s]$s;
    z[1]:1f%1f-d[1];
    ];
   ls_failed:not success;        / line search failure
