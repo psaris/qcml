@@ -22,12 +22,12 @@ cubicextrapolation:{[f2;f3;d3;z3]
 minimize:{[f;d;z;s;F;X]
  z[2]:$[f[2;0]>f[1;0];quadfit;cubicfit][f[2;0];f[3;0];d[3];z[3]];
  if[z[2] in 0n -0w 0w;z[2]:.5*z[3]]; / if we had a numerical problem then bisect
- z[2]:(z[3]*1f-INT)|z[2]&INT*z[3];     / don't accept too close to limits
+ z[2]:(z[3]*1f-INT)|z[2]&INT*z[3]; / don't accept too close to limits
  z[1]+:z[2];
  X+:z[2]$s;
  f[2]:F X;
  d[2]:flip[f[2;1]]$s;
- z[3]-:z[2];                    / z3 is now relative to the location of z2
+ z[3]-:z[2];                / z3 is now relative to the location of z2
  (f;d;z;X)}
 
 extrapolate:{[f;d;z;s;F;X]
@@ -49,30 +49,30 @@ fmincg:{[length;F;X]            / length can default to 100
  i:0;                           / zero the run length counter
  ls_failed:0b;                  / no previous line search has failed
  fX:();
- f:4#enlist 2#0n;                  / make room for f0, f1, f2 and f3
- z:4#0n;                           / make room for z0, z1, z2 and z3
+ f:4#enlist 2#0n;               / make room for f0, f1, f2 and f3
+ z:4#0n;                        / make room for z0, z1, z2 and z3
  d:4#0n;                        / make room for d0, d1, d2 and d3
- f[1]:F X;                        / get function value and gradient
- s:neg f[1;1];                    / search direction is steepest
- d[1]:neg flip[s]$s;              / this is the slope
- z[1]:(length,:1f)[1]%1f-d[1];      / initial step is red/(|s|+1)
+ f[1]:F X;                      / get function value and gradient
+ s:neg f[1;1];                  / search direction is steepest
+ d[1]:neg flip[s]$s;            / this is the slope
+ z[1]:(length,:1f)[1]%1f-d[1];  / initial step is red/(|s|+1)
  length@:0;                     / length is first element
  i+:length<0;                   / count epochs?!
 
  while[i<abs length;            / while not finished
   i+:length>0;                  / count iterations?!
-  X0:X;f[0]:f[1];                   / make a copy of current values
-  X+:z[1]$s;                      / begin line search
+  X0:X;f[0]:f[1];               / make a copy of current values
+  X+:z[1]$s;                    / begin line search
   f[2]:F X;
   i+:length<0;                  / count epochs?!
   d[2]:flip[f[2] 1]$s;
-  f[3]:f[1];d[3]:d[1];z[3]:neg z[1];      / initialize point 3 equal to point 1
+  f[3]:f[1];d[3]:d[1];z[3]:neg z[1]; / initialize point 3 equal to point 1
   M:$[length>0;MAX;MAX&neg length-i];
   success:0b;limit:-1;          / initialize quantities
   BREAK:0b;
   while[not BREAK;
-   while[$[M>0;$[f[2;0]>f[1;0]+z1*RHO*d[1];1b;d[2]>neg SIG*d[1];1b;0b];0b]
-    limit:z[1];                   / tighten the bracket
+   while[$[M>0;$[f[2;0]>f[1;0]+z[1]*RHO*d[1];1b;d[2]>neg SIG*d[1];1b;0b];0b]
+    limit:z[1];                 / tighten the bracket
     X:minimize[f;d;z;s;F;X];f:X 0;d:X 1;z:X 2;X@:3;
     M-:1;i+:length<0;           / count epochs?!
     ];
@@ -85,13 +85,13 @@ fmincg:{[length;F;X]            / length can default to 100
     ];
    ];
   if[success;
-   f[1]:f[2];fX:flip flip[fX],'f[1;0];
+   f[1]:f[2];fX,:f[1;0];
    show "Iteration ",string[i]," | Cost: ", string f[1;0];
-   s:polackribiere[f[1;1];f[2;1];s];      / Polack-Ribiere direction
+   s:polackribiere[f[1;1];f[2;1];s];    / Polack-Ribiere direction
    tmp:f[1;1];f[1;1]:f[2;1];f[2;1]:tmp; / swap derivatives
    d[2]:flip[f[1;1]]$s;
    if[d[2]>0;s:neg f[1;1];d[2]:flip[neg s]$s]; / new slope must be negative, otherwise use steepest direction
-   z[1]*:RATIO&d[1]%d[2]-REALMIN;              / slope ratio but max RATIO
+   z[1]*:RATIO&d[1]%d[2]-REALMIN; / slope ratio but max RATIO
    d[1]:d[2];
    ];
   if[not success;
