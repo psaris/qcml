@@ -20,7 +20,7 @@ cubicextrapolation:{[f2;f3;d3;z3]
  z2}
 
 minimize:{[f1;d3;d2;f2;z1;z3;X]
- z2:$[f2[0]>f1[0];quadfit;cubicfit][f2 0;f3;d3;z3];
+ z2:$[f2[0]>f1[0];quadfit;cubicfit][f2 0;f3 0;d3;z3];
  if[z2 in 0n -0w 0w;z2:.5*z3]; / if we had a numerical problem then bisect
  z2:(z3*1f-INT)|z2&INT*z3;     / don't accept too close to limits
  z1+:z2;
@@ -31,14 +31,14 @@ minimize:{[f1;d3;d2;f2;z1;z3;X]
  (d2;f2;z1;z3;X)}
 
 extrapolate:{[f2;f3;d2;d3;z1;z3;X]
- z2:cubicextrapolation[f2 0;f3;d3;z3];
+ z2:cubicextrapolation[f2 0;f3 0;d3;z3];
  z2:$[$[z2<0;1b;z2=0w];$[limit<=.5;z1*EXT-1f;.5*limit-z1];
   $[limit>-.5;limit<z2+z1;0b];.5*limit-z1; / extraplation beyond max? -> bisect
   $[limit<-.5;(z1*EXT)<z2+z1;0b];z1*EXT-1f; / extraplation beyond limit -> set to limit
   z2<z3*neg INT;z3*neg INT;
   $[limit>-.5;z2<(limit-z1)*1f-INT;0b];(limit-z1)*1f-INT; / too clost to limit?
   z2];
- f3:f2 0;d3:d2;z3:neg z2;       / set point 3 equal to point 2
+ f3:f2;d3:d2;z3:neg z2;       / set point 3 equal to point 2
  z1+:z2;X+:z2*s;                / update current estimates
  f2:f X;
  d2:flip[f2 1]$s;
@@ -63,9 +63,9 @@ fmincg:{[length;f;X]            / length can default to 100
   f2:f X;
   i+:length<0;                  / count epochs?!
   d2:flip[f2 1]$s;
-  f3:f1 0;d3:d1;z3:neg z1;      / initialize point 3 equal to point 1
+  f3:f1;d3:d1;z3:neg z1;      / initialize point 3 equal to point 1
   M:$[length>0;MAX;MAX&neg length-i];
-  success:0b;limit:-1;          / initialize quantities
+  s11uccess:0b;limit:-1;          / initialize quantities
   BREAK:0b;
   while[not BREAK;
    while[$[M>0;$[f2[0]>f1[0]+z1*RHO*d1;1b;d2>neg SIG*d1;1b;0b];0b]
