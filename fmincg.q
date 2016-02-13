@@ -54,7 +54,7 @@ fmincg:{[length;F;X]            / length can default to 100
  d:4#0n;                        / make room for d0, d1, d2 and d3
  f[1]:F X;                      / get function value and gradient
  s:neg f[1;1];                  / search direction is steepest
- d[1]:neg s$s;            / this is the slope
+ d[1]:s$neg s;                  / this is the slope
  z[1]:(length,:1f)[1]%1f-d[1];  / initial step is red/(|s|+1)
  length@:0;                     / length is first element
  i+:length<0;                   / count epochs?!
@@ -88,18 +88,18 @@ fmincg:{[length;F;X]            / length can default to 100
    f[1]:f[2];fX,:f[1;0];
    show "Iteration ",string[i]," | Cost: ", string f[1;0];
    s:polackribiere[f[1;1];f[2;1];s];    / Polack-Ribiere direction
-   tmp:f[1;1];f[1;1]:f[2;1];f[2;1]:tmp; / swap derivatives
+   f[2 1;1]:f[1 2;1]                    / swap derivatives
    d[2]:f[1;1]$s;
-   if[d[2]>0;s:neg f[1;1];d[2]:neg[s]$s]; / new slope must be negative, otherwise use steepest direction
+   if[d[2]>0;s:neg f[1;1];d[2]:s$neg s]; / new slope must be negative, otherwise use steepest direction
    z[1]*:RATIO&d[1]%d[2]-REALMIN; / slope ratio but max RATIO
    d[1]:d[2];
    ];
   if[not success;
    X:X0;f[1]:f[0];     / restore point from before failed line search
    if[$[ls_failed;1b;i>abs length];:(X;fX;i)]; / line search failed twice in a row or we ran out of time, so we give up
-   tmp:f[1;1];f[1;1]:f[2;1];f[2;1]:tmp;        / swap derivatives
+   f[2 1;1]:f[1 2;1]                           / swap derivatives
    s:neg f[1;1];                               / try steepest
-   d1:neg[s]$s;
+   d1:s$neg s;
    z[1]:1f%1f-d[1];
    ];
   ls_failed:not success;        / line search failure
