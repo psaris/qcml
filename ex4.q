@@ -1,5 +1,6 @@
 \l /Users/nick/q/plot.q
 \l /Users/nick/q/qml/src/qml.q
+\l /Users/nick/q/ml/fmincg.q
 
 
 / ex 4
@@ -19,15 +20,14 @@ predictonevsall:{wmax each x lpredict/ y}
 wmax:first idesc@
 rweights:{neg[e]+y cut (x*y)?2*e:sqrt 6%y+x+:1}
 
-nncost:{[X;y;lambda;ninput;nhidden;nlbls;theta]
+nncost:{[X;ymat;lambda;ninput;nhidden;nlbls;theta]
  i:nhidden*ninput+1;
  theta1:nhidden cut i#theta;
  theta2:nlbls cut i _theta;
  a1:1f,'X;
  a2:1f,'sigmoid a1$theta1;
  a3:sigmoid a2$theta2;
- ymat:.qml.diag[nlbls#1f]"i"$y-1;
- J:sum {(-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x}[a3;ymat];
+ J:sum (-1f%count ymat)*sum (ymat*log a3)+(1f-ymat)*log 1f-a3;
  J+:(lambda%2*count ymat)*{x$x}raze over 1_/:(theta1;theta2);
  d3:a3-ymat;
  d2:1_'(d3$flip theta2)*a2*1f-a2;
@@ -53,14 +53,22 @@ rlrgrad:{[l;X;y;theta]
  g}
 lrgrad:rlrgrad[0f]
 
-learn:{[i;n;l;X;y]
+
+learn:{[i;n;l;X;ymat]
  theta:raze over rweights'[-1_n;1_n];
  J:0N!sum rlrcost[l;X;ymat]unraze[n]@;
  G:0N!raze over rlrgrad[l;X;ymat]unraze[n]@;
- opts:`iter,i,`quiet`full`rk;
+ opts:`iter,i,`quiet`full;
  theta:.qml.minx[opts;(J;G);enlist theta];
  theta:first theta`last;
  theta}
+
+learn:{[i;n;l;X;y]
+ theta:raze over rweights'[-1_n;1_n];
+ F:nncost[X;y;l] . n;
+ theta:fmincg[i;F;theta];
+ theta}
+
 unraze:{[n;x](1_n) cut' (sums {x*y+1} prior -1_n) cut x}
 
 checknngradients:{[l]
@@ -81,10 +89,10 @@ numgrad:{[f;x;e](f[x+e]-f[x-e])%2*sum e}
 plt:.plot.plt .plot.hmap 20 cut
 /checknngradients 0f
 
-X:flip (400#"F";",")0:`$":/Users/nick/Downloads/machine-learning-ex3/ex3/ex3data1.csv"
-y:first (1#"F";",")0:`$":/Users/nick/Downloads/machine-learning-ex3/ex3/ex3data2.csv"
-theta1:(401#"F";",") 0: `$":/Users/nick/Downloads/machine-learning-ex3/ex3/theta1.csv"
-theta2:(26#"F";",") 0: `$":/Users/nick/Downloads/machine-learning-ex3/ex3/theta2.csv"
+X:flip (400#"F";",")0:`$":/Users/nick/Downloads/machine-learning-ex4/ex4/ex4data1.csv"
+y:first (1#"F";",")0:`$":/Users/nick/Downloads/machine-learning-ex4/ex4/ex4data2.csv"
+theta1:(401#"F";",") 0: `$":/Users/nick/Downloads/machine-learning-ex4/ex4/theta1.csv"
+theta2:(26#"F";",") 0: `$":/Users/nick/Downloads/machine-learning-ex4/ex4/theta2.csv"
 theta:(theta1;theta2)
 \
 
@@ -99,12 +107,18 @@ theta:raze over (theta1;theta2)
 f:(sum rlrcost[l;X;ymat]unraze[n]@);
 numgrad[f;theta;1e-4,(-1+count theta)#0f]
 
-g:unraze[n] last nncost[X;y;1f;400;25;10;raze/[(theta1;theta2)]]
+
 
 nlbls:10
 n:400 25 10;
 ymat:.qml.diag[nlbls#1f]"i"$y-1
-theta:learn[50;n;0;X;ymat]
+g:unraze[n] last nncost[X;ymat;1f;400;25;10;raze/[(theta1;theta2)]]
+theta:raze over rweights'[-1_n;1_n];
+nncost[X;ymat;0f;400;25;10;raze over (theta1;theta2)]
+
+theta:raze over rweights'[-1_n;1_n];
+fmincg[50;nncost[X;ymat;0] . n;theta]
+
 
 100*avg y=1+predictonevsall[X]unraze[n] theta
 / visualize hidden features
