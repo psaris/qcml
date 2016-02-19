@@ -1,3 +1,5 @@
+\d .fmincg
+
 RHO:.01 / a bunch of constants for line searches
 SIG:.5  / RHO and SIG are the constants in the Wolfe-Powell conditions
 INT:.1 / don't reevaluate within 0.1 of the limit of the current bracket

@@ -67,7 +67,7 @@ learn:{[i;n;l;X;ymat]
 learn:{[i;n;l;X;y]
  theta:raze over rweights'[-1_n;1_n];
  F:nncost[X;y;l] . n;
- theta:fmincg[i;F;theta];
+ theta:.fmincg.fmincg[i;F;theta];
  theta}
 
 unraze:{[n;x](1_n) cut' (sums {x*y+1} prior -1_n) cut x}
@@ -119,7 +119,7 @@ nncost[X;ymat;0f;400;25;10;raze over (theta1;theta2)]
 
 theta:raze over rweights'[-1_n;1_n];
 theta:2 raze/ (theta1;theta2)
-fmincg[50;nncost[X;ymat;0] . n;theta]
+.fmincg.fmincg[50;nncost[X;ymat;0] . n;theta]
 
 
 100*avg y=1+predictonevsall[X]unraze[n] theta
