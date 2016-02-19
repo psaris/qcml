@@ -27,12 +27,13 @@ nncost:{[X;ymat;lambda;ninput;nhidden;nlbls;theta]
  a1:1f,'X;
  a2:1f,'sigmoid a1$theta1;
  a3:sigmoid a2$theta2;
- J:sum (-1f%count ymat)*sum (ymat*log a3)+(1f-ymat)*log 1f-a3;
- J+:(lambda%2*count ymat)*{x$x}raze over 1_/:(theta1;theta2);
+ n:count ymat;
+ J:sum (-1f%n)*sum each (ymat*log a3)+(1f-ymat)*log 1f-a3;
+ J+:(lambda%2*n)*{x$x}raze over 1_/:(theta1;theta2);
  d3:a3-ymat;
  d2:1_'(d3$flip theta2)*a2*1f-a2;
- theta2g:(flip[a2]$d3)%ninput;
- theta1g:(flip[a1]$d2)%ninput;
+ theta2g:(flip[a2]$d3)%n;
+ theta1g:(flip[a1]$d2)%n;
  theta2r:(lambda%ninput)*theta2;
  theta2r[0]*:0f;
  theta2g+:theta2r;
@@ -117,6 +118,7 @@ theta:raze over rweights'[-1_n;1_n];
 nncost[X;ymat;0f;400;25;10;raze over (theta1;theta2)]
 
 theta:raze over rweights'[-1_n;1_n];
+theta:2 raze/ (theta1;theta2)
 fmincg[50;nncost[X;ymat;0] . n;theta]
 
 

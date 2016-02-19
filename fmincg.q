@@ -7,7 +7,7 @@ RATIO:100 / maximum allowed slope ratio
 REALMIN:2.2251e-308
 
 wolfepowell:{[d;f;z]$[d[2]>d[1]*neg SIG;1b;f[2;0]>f[1;0]+d[1]*RHO*z[1]]}
-polackribiere:{[df1;df2;s](((df2$df2)-df1$df2)%s*df1$df1)-df2}
+polackribiere:{[df1;df2;s](s*((df2$df2)-df1$df2)%df1$df1)-df2}
 quadfit:{[f2;f3;d2;d3;z3]z3-(.5*d3*z3*z3)%(f2-f3)+d3*z3}
 cubicfit:{[f2;f3;d2;d3;z3]
  A:(6f*(f2-f3)%z3)+3f*d2+d3;
@@ -51,7 +51,6 @@ loop:{[n;i;f;d;z;s;F;X]
  f[2]:F X;
  i+:n<0;                        / count epochs?!
  d[2]:f[2;1]$s;
- show "d2: ",string d[2];
  f[3]:f[1];d[3]:d[1];z[3]:neg z[1]; / initialize point 3 equal to point 1
  M:$[n>0;MAX;MAX&neg n-i];
  success:0b;limit:-1;           / initialize quantities
@@ -60,9 +59,6 @@ loop:{[n;i;f;d;z;s;F;X]
   while[$[M>0;wolfepowell[d;f;z];0b];
    limit:z[1];                  / tighten the bracket
    X:minimize[f;d;z;s;F;X];f:X 0;d:X 1;z:X 2;X@:3;
-   show "f: ", -3!f;
-   show "d: ", -3!d;
-   show "z: ", -3!z;
    M-:1;i+:n<0;                 / count epochs?!
    ];
   if[wolfepowell[d;f;z];BREAK:1b];        / this is a failure
@@ -76,9 +72,10 @@ loop:{[n;i;f;d;z;s;F;X]
  (success;i;f;d;z;X)}
 
 onsuccess:{[i;f;d;z;s]
- f[1]:f[2];
- show "Iteration ",string[i]," | Cost: ", string f[1;0];
+ f[1;0]:f[2;0];
+ -1"Iteration ",string[i]," | Cost: ", string f[1;0];
  s:polackribiere[f[1;1];f[2;1];s]; / Polack-Ribiere direction
+/ break;
  f[2 1;1]:f[1 2;1];                / swap derivatives
  d[2]:f[1;1]$s;
  if[d[2]>0;s:neg f[1;1];d[2]:s$neg s]; / new slope must be negative, otherwise use steepest direction
@@ -93,7 +90,7 @@ fmincg:{[n;F;X]                 / n can default to 100
  f:4#enlist 2#0n;               / make room for f0, f1, f2 and f3
  z:4#0n;                        / make room for z0, z1, z2 and z3
  d:4#0n;                        / make room for d0, d1, d2 and d3
- f[1]:0N!F X;                      / get function value and gradient
+ f[1]:F X;                      / get function value and gradient
  s:neg f[1;1];                  / search direction is steepest
  d[1]:s$neg s;                  / this is the slope
  z[1]:(n:n,1)[1]%1f-d[1];       / initial step is red/(|s|+1)
