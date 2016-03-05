@@ -26,11 +26,9 @@ data:flip ("FFF";",")0:`$":/Users/nick/Downloads/machine-learning-ex1/ex1/ex1dat
 plt flip data
 X:data[;0 1]
 y:data[;2]
-/ feature normalize
-X:X -\: avg X
-X:X %\: dev each flip X
-/ add intercept
-X:1f,'X
+
+X:flip {(x-avg x)%dev x} each flip X / feature normalize
+X:1f,'X                              / add intercept
 alpha:.01
 theta:count[first X]#0f
 4000 gd[X;y;alpha]/ theta
