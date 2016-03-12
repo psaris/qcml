@@ -25,4 +25,7 @@ opts:`iter,7000,`full`quiet`rk
  / use gradient to improve efficiency
 .qml.minx[opts][(lrcost[X;y]@;enlist lrgrad[X;y]@);enlist theta]
 
+/ compare plots
+.plot.plt data
+.plot.plt (X[;1];X[;2];sigmoid X$first .qml.minx[opts;lrcost[X;y];enlist theta]`x)
 
