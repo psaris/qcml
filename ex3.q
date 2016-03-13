@@ -19,7 +19,7 @@ onevsall:{[X;y;nlbls;lambda]
  theta}
 predict:{[X;theta](1f,'X)$theta} / regression predict
 lpredict:(')[sigmoid;predict]    / logistic regression predict
-wmax:first idesc@               / where max?
+wmax:first idesc@                / where max?
 predictonevsall:{wmax each x lpredict/ y} / predict each number and pick best
 
 \
