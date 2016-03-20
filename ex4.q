@@ -98,7 +98,7 @@ checknngradients .1f
 X:flip (400#"F";",")0:`:ex4data1.csv
 y:first (1#"F";",")0:`:ex4data2.csv
 theta1:(401#"F";",") 0:`:theta1.csv
-theta2:(26#"F";",") 0:`:theta2.csvf
+theta2:(26#"F";",") 0:`:theta2.csv
 /theta:(theta1;theta2)
 
 predict/[X;(theta1;theta2)]
@@ -123,22 +123,13 @@ nncost[X;ymat;0f;400;25;10;2 raze/ (theta1;theta2)]
 theta:2 raze/ rweights'[-1_n;1_n];
 theta:2 raze/ (theta1;theta2)
 .fmincg.fmincg[50;nncost[X;ymat;0] . n;theta]
-.fmincg.fmincg[50;{[X;ymat;n;theta](nncost[X;ymat;0] . n)theta}[X;ymat;n];theta]
-
 
 100*avg y=1+predictonevsall[X]unraze[n] theta
 / visualize hidden features
-plt:.plot.plot[70;25;".-+*#@"] .plot.hmap 20 cut
+plt:.plot.plot[70;25;" ",.plot.c] .plot.hmap 20 cut
 (show plt@) first  1_flip theta1
 
-nlbls:10
-m:count X
-rndi:neg[m]?m
-sel:X 10#rndi
+sel:-10?X
 / mistakes
 sel:X 10#w:where not  y=1+predictonevsall[X]unraze[n] theta
-show .plot.hmap 20 cut)each sel
-
-theta:onevsall[.1;X;y;10]
-100*avg y=1+predictonevsall[X] enlist theta
-
+(show plt@) each sel
