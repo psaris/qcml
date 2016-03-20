@@ -8,7 +8,7 @@ MAX:20 / max 20 function evaluations per line search
 RATIO:100 / maximum allowed slope ratio
 REALMIN:2.2251e-308
 
-wolfepowell:{[v]$[v[`d2]>v[`d1]*neg SIG;1b;v[`f2]>v[`f1]+v[`d1]*RHO*v[`z1]]}
+wolfepowell:{[d1;d2;f1;f2;z1]$[d2>d1*neg SIG;1b;f2>f1+d1*RHO*z1]}
 polackribiere:{[df1;df2;s](s*((df2$df2)-df1$df2)%df1$df1)-df2}
 quadfit:{[f2;f3;d2;d3;z3]z3-(.5*d3*z3*z3)%(f2-f3)+d3*z3}
 cubicfit:{[f2;f3;d2;d3;z3]
@@ -58,12 +58,12 @@ loop:{[n;F;v]
  v[`success]:0b;v[`limit]:-1;   / initialize quantities
  BREAK:0b;
  while[not BREAK;
-  while[$[v[`M]>0;wolfepowell[v];0b];
+  while[$[v[`M]>0;wolfepowell . v`d1`d2`f1`f2`z1;0b];
    v[`limit]:v[`z1];            / tighten the bracket
    v:minimize[F;v];
    v[`M]-:1;v[`i]+:n<0;         / count epochs?!
    ];
-  if[wolfepowell[v];BREAK:1b];                   / failure
+  if[wolfepowell . v`d1`d2`f1`f2`z1;BREAK:1b];   / failure
   if[v[`d2]>SIG*v[`d1];v[`success]:1b;BREAK:1b]; / success
   if[v[`M]=0;BREAK:1b];                          / failure
   if[not BREAK;
