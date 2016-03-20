@@ -30,7 +30,7 @@ minimize:{[v]
  v[`X]+:v[`z2]*v[`s];
  v[`f2]:v[`F] v[`X];
  v[`d2]:v[`f2;1]$v[`s];
- v[`z3]-:v[`z2];                / z3 is now relative to the location of z2
+ v[`z3]-:v[`z2];            / z3 is now relative to the location of z2
  v}
 
 extrapolate:{[v]
@@ -42,33 +42,33 @@ extrapolate:{[v]
   $[v[`limit]>-.5;v[`z2]<(v[`limit]-v[`z1])*1f-INT;0b];(v[`limit]-v[`z1])*1f-INT; / too clost to limit?
   v[`z2]];
  v[`f3]:v[`f2];v[`d3]:v[`d2];v[`z3]:neg v[`z2]; / set point 3 equal to point 2
- v[`z1]+:v[`z2];v[`X]+:v[`z2]*v[`s];              / update current estimates
+ v[`z1]+:v[`z2];v[`X]+:v[`z2]*v[`s]; / update current estimates
  v[`f2]:v[`F] v[`X];
  v[`d2]:v[`f2;1]$v[`s];
  v}
 
 loop:{[n;v]
- v[`i]+:n>0;                        / count iterations?!
- v[`X]+:v[`z1]*v[`s];                     / begin line search
+ v[`i]+:n>0;                    / count iterations?!
+ v[`X]+:v[`z1]*v[`s];           / begin line search
  v[`f2]:v[`F] v[`X];
- v[`i]+:n<0;                        / count epochs?!
+ v[`i]+:n<0;                    / count epochs?!
  v[`d2]:v[`f2;1]$v[`s];
  v[`f3]:v[`f1];v[`d3]:v[`d1];v[`z3]:neg v[`z1]; / initialize point 3 equal to point 1
  v[`M]:$[n>0;MAX;MAX&neg n-v[`i]];
- v[`success]:0b;v[`limit]:-1;           / initialize quantities
+ v[`success]:0b;v[`limit]:-1;   / initialize quantities
  BREAK:0b;
  while[not BREAK;
   while[$[v[`M]>0;wolfepowell[v];0b];
-   v[`limit]:v[`z1];                  / tighten the bracket
+   v[`limit]:v[`z1];            / tighten the bracket
    v:minimize[v];
-   v[`M]-:1;v[`i]+:n<0;                 / count epochs?!
+   v[`M]-:1;v[`i]+:n<0;         / count epochs?!
    ];
-  if[wolfepowell[v];BREAK:1b];        / this is a failure
+  if[wolfepowell[v];BREAK:1b];                   / failure
   if[v[`d2]>SIG*v[`d1];v[`success]:1b;BREAK:1b]; / success
-  if[v[`M]=0;BREAK:1b];                      / failure
+  if[v[`M]=0;BREAK:1b];                          / failure
   if[not BREAK;
    v:extrapolate[v];
-   v[`M]-:1;v[`i]+:n<0;                / count epochs?!
+   v[`M]-:1;v[`i]+:n<0;         / count epochs?!
    ];
   ];
  v}
@@ -77,39 +77,37 @@ onsuccess:{[v]
  v[`f1;0]:v[`f2;0];
  -1"Iteration ",string[v[`i]]," | cost: ", string v[`f1;0];
  v:@[v;`s;polackribiere[v[`f1;1];v[`f2;1]]]; / Polack-Ribiere direction
-/ break;
- v[`f2`f1;1]:v[`f1`f2;1];                / swap derivatives
+ v[`f2`f1;1]:v[`f1`f2;1];       / swap derivatives
  v[`d2]:v[`f1;1]$v[`s];
- if[v[`d2]>0;v[`s]:neg v[`f1;1];v[`d2]:v[`s]$neg v[`s]]; / new slope must be negative, otherwise use steepest direction
- v[`z1]*:RATIO&v[`d1]%v[`d2]-REALMIN;        / slope ratio but max RATIO
+ / new slope must be negative, otherwise use steepest direction
+ if[v[`d2]>0;v[`s]:neg v[`f1;1];v[`d2]:v[`s]$neg v[`s]];
+ v[`z1]*:RATIO&v[`d1]%v[`d2]-REALMIN; / slope ratio but max RATIO
  v[`d1]:v[`d2];
  v}
 
 fmincg:{[n;F;X]                 / n can default to 100
  v:`F`X!(F;X);
- v[`i]:0;                           / zero the run length counter
+ v[`i]:0;                       / zero the run length counter
  ls_failed:0b;                  / no previous line search has failed
  fX:();
- v[`f]:4#enlist 2#0n;               / make room for f0, f1, f2 and f3
- v[`z]:4#0n;                        / make room for z0, z1, z2 and z3
- v[`d]:4#0n;                        / make room for d0, d1, d2 and d3
- v[`f1]:v[`F] v[`X];                      / get function value and gradient
- v[`s]:neg v[`f1;1];                  / search direction is steepest
- v[`d1]:v[`s]$neg v[`s];                  / this is the slope
- v[`z1]:(n:n,1)[1]%1f-v[`d1];       / initial step is red/(|s|+1)
+ v[`f1]:v[`F] v[`X];            / get function value and gradient
+ v[`s]:neg v[`f1;1];            / search direction is steepest
+ v[`d1]:v[`s]$neg v[`s];        / this is the slope
+ v[`z1]:(n:n,1)[1]%1f-v[`d1];   / initial step is red/(|s|+1)
  n@:0;                          / n is first element
- v[`i]+:n<0;                        / count epochs?!
+ v[`i]+:n<0;                    / count epochs?!
 
- while[v[`i]<abs n;                 / while not finished
-  X0:v[`X];v[`f;0]:v[`f1];               / make a copy of current values
+ while[v[`i]<abs n;             / while not finished
+  X0:v[`X];v[`f;0]:v[`f1];      / make a copy of current values
   v:loop[n;v];
   if[v[`success];fX,:v[`f2;0];v:onsuccess[v]];
   if[not v[`success];
-   v[`X]:X0;v[`f1]:v[`f;0];     / restore point from before failed line search
-   if[$[ls_failed1b;v[`i]>abs n];:(v[`X];fX;v[`i])]; / line search failed twice in a row or we ran out of time, so we give up
-   v[`f2`f1;1]:v[`f1`f2;1];                           / swap derivatives
-   v[`z1]:1f%1f-v[`d1]:v[`s]$neg v[`s]:neg v[`f1;1];         / try steepest
+   v[`X]:X0;v[`f1]:v[`f;0]; / restore point from before failed line search
+   / line search failed twice in a row or we ran out of time, so we give up
+   if[$[ls_failed1b;v[`i]>abs n];:(v[`X];fX;v[`i])];
+   v[`f2`f1;1]:v[`f1`f2;1];     / swap derivatives
+   v[`z1]:1f%1f-v[`d1]:v[`s]$neg v[`s]:neg v[`f1;1]; / try steepest
    ];
-  ls_failed:not v[`success];        / line search failure
+  ls_failed:not v[`success];    / line search failure
   ];
  (v[`X];fX;v[`i])}
