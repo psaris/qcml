@@ -1,26 +1,19 @@
-\l /Users/nick/q/plot.q
-\l /Users/nick/q/qml/src/qml.q
+\l /Users/nick/q/ml/plot.q
 \l /Users/nick/q/ml/fmincg.q
-\l /Users/nick/q/qtips/util.q
-\l /Users/nick/q/qtips/prof.q
-
+\l /Users/nick/q/qml/src/qml.q
 
 / ex 4
 sigmoid:{1f%1f+exp neg x}
 sigmoidgrad:{x*1f-x:sigmoid x}
-/ logistic regression cost
-/lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid X$theta}
 predict:{[X;theta](1f,'X)$theta}
-lpredict:(')[sigmoid;predict]
+lpredict:(')[sigmoid;predict]   / logistic regression predict
+/ logistic regression cost
 lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:lpredict/[X;theta]}
-/lrgrad:{[X;y;theta](1f%count y)*flip[X]$sigmoid[X$theta]-y}
-/ regularized lrcost/lrgrad
-/rlrcost:{[X;y;l;theta]lrcost[X;y;theta]+(l%2*count y)*theta$@[theta;0;:;0f]}
+/ regularized lrcost
 rlrcost:{[l;X;y;theta]lrcost[X;y;theta]+(l%2*count[y]*count first y)*x$x:2 raze/ 1_/:theta}
-/rlrgrad:{[X;y;l;theta]lrgrad[X;y;theta]+(l%count y)*@[theta;0;:;0f]}
 predictonevsall:{wmax each x lpredict/ y}
-wmax:first idesc@
-rweights:{neg[e]+y cut (x*y)?2*e:sqrt 6%y+x+:1}
+wmax:first idesc@                               / where max
+rweights:{neg[e]+y cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 
 nncost:{[X;ymat;lambda;ninput;nhidden;nlbls;theta]
  i:nhidden*ninput+1;
@@ -44,6 +37,8 @@ nncost:{[X;ymat;lambda;ninput;nhidden;nlbls;theta]
  theta1g+:theta1r;
  grad:raze/[(theta1g;theta2g)];
  (J;grad)}
+
+/ regularized logistic regression gradient
 rlrgrad:{[l;X;y;theta]
  n:count y;
  a:lpredict\[enlist[X],theta];
@@ -51,12 +46,13 @@ rlrgrad:{[l;X;y;theta]
  a:1f,''-1_a;
  d:{[d;theta;a]1_'(d$flip theta)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
  g:{(flip[x]$y)%z}'[a;d;n];
- / regularized
+ / regularization
  if[l>0f;g+:(l%n)*@[;0;*;0f] each theta];
  g}
+
 lrgrad:rlrgrad[0f]
 
-
+/ learn theta using qml conmax
 learn:{[i;n;l;X;ymat]
  theta:2 raze/ rweights'[-1_n;1_n];
  J:0N!sum rlrcost[l;X;ymat]unraze[n]@;
@@ -66,13 +62,16 @@ learn:{[i;n;l;X;ymat]
  theta:first theta`last;
  theta}
 
+/ learn theta using fmincg
 learn:{[i;n;l;X;y]
  theta:2 raze/ rweights'[-1_n;1_n];
  F:nncost[X;y;l] . n;
  theta:.fmincg.fmincg[i;F;theta];
  theta}
 
+/ cut a single vector
 unraze:{[n;x](1_n) cut' (sums {x*y+1} prior -1_n) cut x}
+diag:{$[0h>t:type x;x;@[n#abs[t]$0;;:;]'[til n:count x;x]]}
 
 checknngradients:{[l]
  n: 3 5 3;
@@ -80,27 +79,30 @@ checknngradients:{[l]
  theta2:rweights . n 1 2;
  X:flip rweights[-1+n 0;5];
  y:1+(1+'til 5) mod 3;
- ymat:.qml.diag[n[2]#1f]"i"$y-1;
+ ymat:diag[n[2]#1f]"i"$y-1;
  theta:2 raze/ (theta1;theta2);
  g:2 raze/ rlrgrad[l;X;ymat] unraze[n] theta;
  f:(sum rlrcost[l;X;ymat]unraze[n]@);
- ng:numgrad[f;theta] each .qml.diag count[theta]#1e-4;
+ ng:numgrad[f;theta] count[theta]#1e-4;
  (g;ng)}
 
-numgrad:{[f;x;e](f[x+e]-f[x-e])%2*sum e}
+/ (f)unction, x, (e)psilon
+/ compute partial derivatives if e is a list
+numgrad:{[f;x;e](.5%e)*{x[y+z]-x[y-z]}[f;x] each diag e}
 
-plt:.plot.plt .plot.hmap 20 cut
-/checknngradients 0f
-
-X:flip (400#"F";",")0:`$":/Users/nick/Downloads/machine-learning-ex4/ex4/ex4data1.csv"
-y:first (1#"F";",")0:`$":/Users/nick/Downloads/machine-learning-ex4/ex4/ex4data2.csv"
-theta1:(401#"F";",") 0: `$":/Users/nick/Downloads/machine-learning-ex4/ex4/theta1.csv"
-theta2:(26#"F";",") 0: `$":/Users/nick/Downloads/machine-learning-ex4/ex4/theta2.csv"
-/theta:(theta1;theta2)
 \
+plt:.plot.plt .plot.hmap 20 cut
+checknngradients .1f
+
+\cd /Users/nick/Downloads/machine-learning-ex4/ex4
+X:flip (400#"F";",")0:`:ex4data1.csv
+y:first (1#"F";",")0:`:ex4data2.csv
+theta1:(401#"F";",") 0:`:theta1.csv
+theta2:(26#"F";",") 0:`:theta2.csvf
+/theta:(theta1;theta2)
 
 predict/[X;(theta1;theta2)]
-ymat:.qml.diag[10#1f]"i"$y-1
+ymat:diag[10#1f]"i"$y-1
 sum lrcost[X;ymat] (theta1;theta2)
 sum rlrcost[1f;X;ymat] (theta1;theta2)
 2 raze/ rlrgrad[1f;X;ymat] (theta1;theta2)
@@ -112,7 +114,7 @@ numgrad[f;theta;1e-4,(-1+count theta)#0f]
 
 
 n:400 25 10;
-ymat:.qml.diag[last[n]#1f]"i"$y-1
+ymat:diag[last[n]#1f]"i"$y-1
 g:unraze[n] last nncost[X;ymat;1f;400;25;10;raze/[(theta1;theta2)]]
 theta:2 raze/ rweights'[-1_n;1_n];
 .fmincg.fmincg[50;nncost[X;ymat;0f] . n;theta]
@@ -120,14 +122,14 @@ nncost[X;ymat;0f;400;25;10;2 raze/ (theta1;theta2)]
 
 theta:2 raze/ rweights'[-1_n;1_n];
 theta:2 raze/ (theta1;theta2)
-/.prof.instr `fmincg
 .fmincg.fmincg[50;nncost[X;ymat;0] . n;theta]
 .fmincg.fmincg[50;{[X;ymat;n;theta](nncost[X;ymat;0] . n)theta}[X;ymat;n];theta]
 
 
 100*avg y=1+predictonevsall[X]unraze[n] theta
 / visualize hidden features
-(show plt@) each 1_flip theta1
+plt:.plot.plot[70;25;".-+*#@"] .plot.hmap 20 cut
+(show plt@) first  1_flip theta1
 
 nlbls:10
 m:count X
