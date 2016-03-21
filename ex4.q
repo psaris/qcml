@@ -8,35 +8,26 @@ sigmoidgrad:{x*1f-x:sigmoid x}
 predict:{[X;theta](1f,'X)$theta}
 lpredict:(')[sigmoid;predict]   / logistic regression predict
 / logistic regression cost
-lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:lpredict/[X;theta]}
+lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta}
 / regularized lrcost
 rlrcost:{[l;X;y;theta]lrcost[X;y;theta]+(l%2*count[y]*count first y)*x$x:2 raze/ 1_/:theta}
 predictonevsall:{wmax each x lpredict/ y}
 wmax:first idesc@                               / where max
 rweights:{neg[e]+y cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 
-nncost:{[X;ymat;lambda;ninput;nhidden;nlbls;theta]
- i:nhidden*ninput+1;
- theta1:nhidden cut i#theta;
- theta2:nlbls cut i _theta;
- a1:1f,'X;
- a2:1f,'sigmoid a1$theta1;
- a3:sigmoid a2$theta2;
+nncost:{[X;ymat;l;n;theta]
+ theta:unraze[n] theta;
+ x:last a:lpredict\[enlist[X],theta];
  n:count ymat;
- J:sum (-1f%n)*sum each (ymat*log a3)+(1f-ymat)*log 1f-a3;
- J+:(lambda%2*n)*{x$x}2 raze/ 1_/:(theta1;theta2);
- d3:a3-ymat;
- d2:1_'(d3$flip theta2)*a2*1f-a2;
- theta2g:(flip[a2]$d3)%n;
- theta1g:(flip[a1]$d2)%n;
- theta2r:(lambda%ninput)*theta2;
- theta2r[0]*:0f;
- theta2g+:theta2r;
- theta1r:(lambda%ninput)*theta1;
- theta1r[0]*:0f;
- theta1g+:theta1r;
- grad:raze/[(theta1g;theta2g)];
- (J;grad)}
+ J:sum (-1f%n)*sum each (ymat*log x)+(1f-ymat)*log 1f-x;
+ if[l>0f;J+:(l%2*n)*{x$x}2 raze/ 1_/:theta];
+ d:x-ymat;
+ a:1f,''-1_a;
+ d:{[d;theta;a]1_'(d$flip theta)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
+ g:{(flip[x]$y)%z}'[a;d;n];
+ / regularization
+ if[l>0f;g+:(l%n)*@[;0;*;0f] each theta];
+ (J;2 raze/ g)}
 
 / regularized logistic regression gradient
 rlrgrad:{[l;X;y;theta]
@@ -65,7 +56,7 @@ learn:{[i;n;l;X;ymat]
 / learn theta using fmincg
 learn:{[i;n;l;X;y]
  theta:2 raze/ rweights'[-1_n;1_n];
- F:nncost[X;y;l] . n;
+ F:nncost[X;y;l;n];
  theta:.fmincg.fmincg[i;F;theta];
  theta}
 
@@ -115,14 +106,14 @@ numgrad[f;theta;1e-4,(-1+count theta)#0f]
 
 n:400 25 10;
 ymat:diag[last[n]#1f]"i"$y-1
-g:unraze[n] last nncost[X;ymat;1f;400;25;10;raze/[(theta1;theta2)]]
+g:unraze[n] last nncost[X;ymat;1f;n;raze/[(theta1;theta2)]]
 theta:2 raze/ rweights'[-1_n;1_n];
-.fmincg.fmincg[50;nncost[X;ymat;0f] . n;theta]
-nncost[X;ymat;0f;400;25;10;2 raze/ (theta1;theta2)]
+.fmincg.fmincg[50;nncost[X;ymat;0f;n];theta]
+nncost[X;ymat;0f;n;2 raze/ (theta1;theta2)]
 
 theta:2 raze/ rweights'[-1_n;1_n];
 theta:2 raze/ (theta1;theta2)
-.fmincg.fmincg[50;nncost[X;ymat;0] . n;theta]
+.fmincg.fmincg[50;nncost[X;ymat;0;n];theta]
 
 100*avg y=1+predictonevsall[X]unraze[n] theta
 / visualize hidden features
