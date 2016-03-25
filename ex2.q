@@ -3,18 +3,18 @@
 
 sigmoid:{1f%1f+exp neg x}
 / logistic regression cost
-lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid X$theta}
+lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid sum X*theta}
 / logistic regression gradient
-lrgrad:{[X;y;theta](1f%count y)*flip[X]$sigmoid[X$theta]-y}
+lrgrad:{[X;y;theta](1f%count y)*X$\:sigmoid[sum X*theta]-y}
 
 \
 .plot.plt sigmoid .1*-50+til 100 / plot sigmoid function
 \cd /Users/nick/Downloads/machine-learning-ex2/ex2
 data:("FFF";",")0:`:ex2data1.txt
 .plot.plt data
-X:1f,'flip data 0 1
 y:data 2
-theta:count[first X]#0f
+X:((1;count y)#1f),data 0 1
+theta:count[X]#0f
 lrcost[X;y;theta]               / logistic regression cost
 lrgrad[X;y;theta]               / logistic regression gradient
 
@@ -27,5 +27,5 @@ opts:`iter,7000,`full`quiet`rk
 
 / compare plots
 .plot.plt data
-.plot.plt (X[;1];X[;2];sigmoid X$first .qml.minx[opts;lrcost[X;y];enlist theta]`x)
+.plot.plt (X 1;X 2;sigmoid sum X*first .qml.minx[opts;lrcost[X;y];enlist theta]`x)
 
