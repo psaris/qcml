@@ -2,42 +2,41 @@
 \l /Users/nick/q/qml/src/qml.q
 
 / least squares cost function
-lscost:{[X;y;theta](1f%2*count y)*y$y-:X$theta}
+lscost:{[X;y;theta](1f%2*count first y)*y$y-:sum X*theta}
 / gradient descent
-gd:{[X;y;alpha;theta] theta+(alpha%count y)*flip[X]$y-X$theta}
+gd:{[X;y;alpha;theta] theta+(alpha%count y)*X$y-sum X*theta}
 / normal equations
-solve:{[X;y]inv[fX$X]$(fX:flip X)$y}
+solve:{[X;y]inv[X$/:X]$X$\:y}
 / feature normalization
 zscore:{(x-avg x)%dev x}
 
 \
+\c 100 100
 \cd /Users/nick/Downloads/machine-learning-ex1/ex1
 data:("FF";",")0:`:ex1data1.txt
 .plot.plt data
-X:1f,' flip 1#data              / add intercept
 y:data 1
-theta:count[first X]#0f         / initial guess
+X:((1;count y)#1f),1#data       / add intercept
+theta:count[X]#0f               / initial guess
 alpha:.001                      / learning rate
 lscost[X;y;theta]               / least squares cost
 / plot cost function of each gd step
 .plot.plt lscost[X;y] each 20 gd[X;y;alpha]\theta
 gd[X;y;alpha]/[theta]           / obtain optimal theta
 / plot prediction of optimal theta
-.plot.plt (X[;1];X$gd[X;y;alpha]/[theta])
-first flip .qml.mlsq[X;flip enlist y] / qml least squares
-solve[X;y]                            / normal equations
-enlist[y] lsq flip X                  / q least squares
+.plot.plt (X 1;sum X*gd[X;y;alpha]/[theta])
+first flip .qml.mlsq[flip X;flip enlist y] / qml least squares
+solve[X;y]                                 / normal equations
+enlist[y] lsq X                            / q least squares
 
 data:("FFF";",")0:`ex1data2.txt
-.plot.plt data
-X:1f,'flip zscore each data 0 1  / normalize and add intercept
+.plot.plt 2#data
 y:data 2
+X:((1;count y)#1f),zscore each data 0 1 / normalize and add intercept
 alpha:.01
-theta:count[first X]#0f
+theta:count[X]#0f
 4000 gd[X;y;alpha]/ theta
 
-first flip .qml.mlsq[X;flip enlist y] / qml least squares
+first flip .qml.mlsq[flip X;flip enlist y] / qml least squares
 solve[X;y]                            / normal equations
-enlist[y] lsq flip X                  / q least squares
-
-
+enlist[y] lsq X                       / q least squares
