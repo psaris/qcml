@@ -12,8 +12,9 @@ lrgrad:{[X;y;theta](1f%count y)*X$\:sigmoid[sum X*theta]-y}
 \cd /Users/nick/Downloads/machine-learning-ex2/ex2
 data:("FFF";",")0:`:ex2data1.txt
 .plot.plt data
+X:data 0 1
+X:((1;count X 0)#1f),X
 y:data 2
-X:((1;count y)#1f),data 0 1
 theta:count[X]#0f
 lrcost[X;y;theta]               / logistic regression cost
 lrgrad[X;y;theta]               / logistic regression gradient
