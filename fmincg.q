@@ -129,7 +129,7 @@ loop:{[n;F;v]
 
 onsuccess:{[v]
  v[`f1]:v[`f2];
- -1"Iteration ",string[v[`i]]," | cost: ", string v[`f1];
+ 1"Iteration ",string[v[`i]]," | cost: ", string[v[`f1]], "\r";
  v:@[v;`s;polackribiere[v[`df1];v[`df2]]]; / Polack-Ribiere direction
  v[`df2`df1]:v[`df1`df2];                  / swap derivatives
  v[`d2]:v[`df1]$v[`s];
@@ -163,4 +163,5 @@ fmincg:{[n;F;X]                 / n can default to 100
    ];
   ls_failed:not v[`success];    / line search failure
   ];
+ -1"";
  (v[`X];fX;v[`i])}
