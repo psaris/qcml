@@ -3,7 +3,7 @@
 
 sigmoid:{1f%1f+exp neg x}
 / logistic regression cost
-lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid sum X*theta}
+lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid theta$X}
 / logistic regression gradient
 lrgrad:{[X;y;theta](1f%count y)*X$\:sigmoid[sum X*theta]-y}
 
