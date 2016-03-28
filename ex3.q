@@ -5,11 +5,11 @@
 sigmoid:{1f%1f+exp neg x}
 / TODO: merge regularized
 / logistic regression cost
-lrcost:{[X;y;theta](-1f%count y 0)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid theta$X}
-lrgrad:{[X;y;theta](1f%count y 0)*X$\:sigmoid[theta$X]-y}
+lrcost:{[X;y;theta](-1f%count y)*sum (y*log x)+(1f-y)*log 1f-x:sigmoid theta$X}
+lrgrad:{[X;y;theta](1f%count y)*X$\:sigmoid[theta$X]-y}
 / regularized lrcost/lrgrad
-rlrcost:{[X;y;l;theta]lrcost[X;y;theta]+(l%2*count y 0)*theta$@[theta;0;:;0f]}
-rlrgrad:{[X;y;l;theta]lrgrad[X;y;theta]+(l%count y 0)*@[theta;0;:;0f]}
+rlrcost:{[X;y;l;theta]lrcost[X;y;theta]+(l%2*count y)*theta$@[theta;0;:;0f]}
+rlrgrad:{[X;y;l;theta]lrgrad[X;y;theta]+(l%count y)*@[theta;0;:;0f]}
 rlrcostgrad:{[X;y;l;theta](rlrcost[X;y;l;theta];rlrgrad[X;y;l;theta])}
 
 onevsall:{[n;X;y;nlbls;lambda]
