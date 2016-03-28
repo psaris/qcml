@@ -15,7 +15,7 @@ rlrcostgrad:{[X;y;l;theta](rlrcost[X;y;l;theta];rlrgrad[X;y;l;theta])}
 onevsall:{[n;X;y;nlbls;lambda]
  X:((1;count X 0)#1f),X;
  theta:count[X]#0f;
- theta:(first .fmincg.fmincg[n;;theta] rlrcostgrad[X;;lambda] "f"$y=0N!) peach 1+til nlbls;
+ theta:(first .fmincg.fmincg[n;;theta] rlrcostgrad[X;;lambda] "f"$y=) peach 1+til nlbls;
 / theta:(.qml.minx[`iter,50,`quiet`full;;enlist theta] {[X;y;l](rlrcost[X;y;l]@;enlist rlrgrad[X;y;l]@)}[1f,'X;;lambda] "f"$y=0N!) peach 1+til nlbls;
 / theta:flip first each theta`last;
  theta}
