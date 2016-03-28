@@ -24,7 +24,7 @@ nncost:{[X;ymat;l;n;theta]
  d:x-ymat;
  a:{((1;count x 0)#1f),x}each -1_a;
  d:{[d;theta;a]1_(flip[theta]$d)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
- g:{(y$flip x)%z}'[a;d;n];
+ g:{(y$/:x)%z}'[a;d;n];
  / regularization
  if[l>0f;g+:(l%n)*@[;0;*;0f] each theta];
  (J;2 raze/ g)}
@@ -36,7 +36,7 @@ rlrgrad:{[l;X;y;theta]
  d:last[a]-y;
  a:{((1;count x 0)#1f),x}each -1_a;
  d:{[d;theta;a]1_(flip[theta]$d)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
- g:{(y$flip x)%z}'[a;d;n];
+ g:{(y$/:x)%z}'[a;d;n];
  / regularization
  if[l>0f;g+:(l%n)*@[;0;*;0f] each theta];
  g}
