@@ -16,7 +16,6 @@ wmax:first idesc@                               / where max
 rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 
 nncost:{[X;ymat;l;n;theta]
- -1"cost";
  theta:unraze[n] theta;
  x:last a:lpredict\[enlist[X],theta];
  n:count ymat 0;
@@ -69,9 +68,9 @@ checknngradients:{[l]
  n: 3 5 3;
  theta1:rweights . n 0 1;
  theta2:rweights . n 1 2;
- X:rweights[-1+n 0;5];
+ X:flip rweights[-1+n 0;5];
  y:1+(1+til 5) mod 3;
- ymat:diag[n[2]#1f]"i"$y-1;
+ ymat:flip diag[n[2]#1f]"i"$y-1;
  theta:2 raze/ (theta1;theta2);
  g:2 raze/ rlrgrad[l;X;ymat] unraze[n] theta;
  f:(sum rlrcost[l;X;ymat]unraze[n]@);
