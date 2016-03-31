@@ -17,7 +17,7 @@ data:("FFF";",")0:`:ex2data1.txt
 .plot.plt data
 X:data 0 1
 y:data 1#2
-theta:enlist (1+count X)#0f
+theta:(1;1+count X)#0f
 lrcost[X;y;enlist theta]        / logistic regression cost
 lrgrad[X;y;enlist theta]        / logistic regression gradient
 
@@ -25,7 +25,7 @@ lrgrad[X;y;enlist theta]        / logistic regression gradient
 opts:`iter,7000,`full`quiet`rk
  / find function minimum
 lrcost:{[X;y;theta](-1f%count y 0)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta}
-theta:enlist (1+count X)#0f
+theta:(1;1+count X)#0f
 .qml.minx[opts;sum lrcost[X;y]enlist enlist@;theta]
  / use gradient to improve efficiency
 .qml.minx[opts][(sum lrcost[X;y]enlist enlist@;lrgrad[X;y]enlist enlist@);theta]
