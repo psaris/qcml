@@ -33,5 +33,5 @@ theta:enlist (1+count X)#0f
 / compare plots
 theta:first .qml.minx[opts;sum lrcost[X;y]enlist enlist@;theta]
 .plot.plt data
-.plot.plt X,sigmoid theta$(((1;count X 0)#1f),X)
+.plot.plt X,sigmoid theta$((1;count X 0)#1f),X
 
