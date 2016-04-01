@@ -157,11 +157,10 @@ fmincg:{[n;F;X]                 / n can default to 100
   if[not v[`success];
    v[`X`f1`df1]:X0;     / restore point from before failed line search
    / line search failed twice in a row or we ran out of time, so we give up
-   if[$[ls_failed1b;v[`i]>abs n];:(v[`X];fX;v[`i])];
+   if[$[ls_failed;1b;v[`i]>abs n];-1"";:(v[`X];fX;v[`i])];
    v[`df2`df1]:v[`df1`df2];     / swap derivatives
    v[`z1]:1f%1f-v[`d1]:v[`s]$neg v[`s]:neg v[`df1]; / try steepest
    ];
   ls_failed:not v[`success];    / line search failure
   ];
- -1"";
- (v[`X];fX;v[`i])}
+ -1"";(v[`X];fX;v[`i])}
