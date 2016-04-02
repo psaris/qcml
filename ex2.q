@@ -2,9 +2,9 @@
 \l /Users/nick/q/qml/src/qml.q
 
 sigmoid:{1f%1f+exp neg x}
-/ logistic regression cost
 predict:{[X;theta]theta$((1;count X 0)#1f),X} / regression predict
 lpredict:(')[sigmoid;predict]   / logistic regression predict
+/ logistic regression cost
 lrcost:{[X;y;theta](-1f%count y 0)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta}
 / logistic regression gradient
 lrgrad:{[X;y;theta](1f%count y 0)*(((1;count X 0)#1f),X)$/:(X lpredict/ theta)-y}
