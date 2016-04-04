@@ -20,11 +20,12 @@ ldidx:{[f]
 / load training data
 y:"i"$ldidx `$"train-labels-idx1-ubyte"
 X:flip "f"$raze each ldidx `$"train-images-idx3-ubyte"
-/(show .plot.plot[40;15;" ",.plot.c] .plot.hmap flip@) each  10#10_X
+plt:.plot.plot[20;10;" ",.plot.c] .plot.hmap flip 28 cut
+(,') over plt each  flip X[;-4?til count X 0]
 
 / learn
 n:784 30 10;
-ymat:flip diag[last[n]#1f]"i"$y
+ymat:diag[last[n]#1f]@\:"i"$y
 theta:2 raze/ rweights'[-1_n;1_n];
 / batch gradient descent
 theta:first .fmincg.fmincg[5;nncost[X;ymat;0;n];theta]
@@ -33,8 +34,11 @@ theta:first .fmincg.fmincg[5;nncost[X;ymat;0;n];theta]
 theta:{[X;ymat;theta;i]first .fmincg.fmincg[1;nncost[X[;i];ymat[;i];0;n];theta i]}[X;ymat]/[1000 cut til count theta]
 
 / how well did we learn
-\ts 100*avg y=predictonevsall[X]unraze[n] theta
+100*avg y=predictonevsall[X]unraze[n] theta
 
+p w:where not y=p:predictonevsall[X]unraze[n] theta
+(,') over plt each 4#flip X[;w]
+`p`a!(p 4#w;y 4#w)
 
 / load testing data
 yt:"i"$ldidx `$"t10k-labels-idx1-ubyte"
@@ -43,5 +47,5 @@ Xt:flip "f"$raze each ldidx `$"t10k-images-idx3-ubyte"
 / how well can we predict
 100*avg yt=predictonevsall[Xt]unraze[n] theta
 
-p w:where not yt=p:predictonevsall[Xt]unraze[n] theta
-(show .plot.plot[40;15;" ",.plot.c] .plot.hmap flip 28 cut) each flip Xt[;10# w]
+(,') over plt each 4#flip Xt[;w]
+`p`a!(p 4#w;yt 4#w)
