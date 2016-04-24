@@ -9,7 +9,7 @@ X:(400#"F";",")0:`:ex3data1.csv / 5000 20x20 bitmaps
 y:(1#"F";",")0:`:ex3data2.csv  / integers 1-10 (10=0)
 
 / plot 4 random bitmaps
-plt:(.plot.plot[20;20;" ",.plot.c] .plot.hmap 20 cut)
+plt:(.plot.plot[20;20;.plot.c16] .plot.hmap 20 cut)
 (,') over  plt each flip X[;-4?til count X 0]
 
 nlbls:10
