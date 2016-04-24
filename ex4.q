@@ -32,10 +32,11 @@ theta:first .fmincg.fmincg[50;.ml.nncost[X;ymat;0;n];theta]
 
 100*avg y=1+.ml.predictonevsall[X].ml.unraze[n] theta
 / visualize hidden features
-plt:.plot.plot[70;25;" ",.plot.c] .plot.hmap 20 cut
+plt:.plot.plot[39;20;" ",.plot.c16] .plot.hmap 20 cut
 plt 1_first theta1
 
 / mistakes
+\c 100 200
 w:-4?where not y=p:1+.ml.predictonevsall[X].ml.unraze[n] theta
 (,') over plt each flip X[;w]
 `p`a!(p 4#w;y 4#w)
