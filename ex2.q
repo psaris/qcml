@@ -23,7 +23,7 @@ theta:(1;1+count X)#0f
 .qml.minx[opts][(.ml.logcost[X;y]enlist enlist@;raze .ml.loggrad[X;y]enlist enlist@);theta]
 
 / compare plots
-theta:first .qml.minx[opts;lrcost[X;y]enlist enlist@;theta]
+theta:first .qml.minx[opts;.ml.logcost[X;y]enlist enlist@;theta]
 .plot.plt data
 .plot.plt X,.ml.lpredict[X] theta
 
