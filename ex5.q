@@ -6,7 +6,7 @@
 
 \
 \cd /Users/nick/Downloads/machine-learning-ex5/ex5
-plt:.plot.plot[23;12;.plot.c16]
+plt:.plot.plot[23;12;"*"]
 data:(2#"F";",")0:`:ex5data1.csv
 plt data
 X:1#data
