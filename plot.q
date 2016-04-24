@@ -21,7 +21,7 @@ plot:{[w;h;c;X]
 c10:" .:-=+*#%@"          / http://paulbourke.net/dataformats/asciiart
 c10:" .-:=+x#%@"          / 10 characters
 c16:" .-:=+*xoXO#$&%@"    / 16 characters
-c68:" .'`^,:;Il!i><~+_-?][}{1)(|\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+c68:" .'`^,:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 c89:" `-.'_:,=^;<+!*?/cLzrs7TivJtC{3F)Il(xZfY5S2eajo14[nuyE]P6V9kXpKwGhqAUbOd8#HRDB0$mgMW&Q%N@"
 plt:plot[59;30;1_c16]               / default plot function
 
