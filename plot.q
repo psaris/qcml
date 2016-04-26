@@ -10,7 +10,7 @@ plot:{[w;h;c;X]
  if[0h<type X;X:(til count X;X)]; / turn x into (x;y)
  if[3>n:count X;X,:count[X 0]#1]; / turn (x;y) into (x;y;z)
  Z:@[X;0 1;scale;(w;h)];          / scale (x;y) to (w;h)
- Z:flip key[Z],'avg each value Z:Z[2]g:group flip 2#Z; / avg overlapping z
+ Z:flip key[Z],'sum each value Z:Z[2]g:group flip 2#Z; / sum overlapping z
  Z:@[Z;2;scale;cn];                                    / scale z
  p:h#enlist w#" ";                                     / empty canvas
  p:.[;;:;]/[p;flip Z 1 0;c Z 2];                       / plot points
