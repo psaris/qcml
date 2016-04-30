@@ -8,15 +8,15 @@ predict:{[X;theta]theta$addint X}
 
 / regularized linear regression cost
 rlincost:{[l;X;y;theta]
- J:sum (1f%2*count y 0)*sum y$/:y-:X predict/ theta;
- if[l>0f;J+:(l%2*count y 0)*x$x:2 raze/ @[;0;:;0f]''[theta]];
+ J:sum (1f%2*n:count y 0)*sum y$/:y-:X predict/ theta;
+ if[l>0f;J+:(l%2*n)*x$x:2 raze/ @[;0;:;0f]''[theta]];
  J}
 lincost:rlincost[0f]
 
 / regularized linear regression gradient
 rlingrad:{[l;X;y;theta]
- g:(1f%count y 0)*addint[X]$/:predict[X;theta]-y;
- if[l>0f;g+:(l%count y 0)*@[;0;:;0f]'[theta]];
+ g:(1f%n:count y 0)*addint[X]$/:predict[X;theta]-y;
+ if[l>0f;g+:(l%n)*@[;0;:;0f]'[theta]];
  g}
 lingrad:rlingrad[0f]
 
@@ -37,8 +37,8 @@ lpredict:(')[sigmoid;predict]
 
 / regularized logistic regression lrcost
 rlogcost:{[l;X;y;theta]
- J:sum (-1f%count y 0)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta;
- if[l>0f;J+:(l%2*count y 0)*x$x:2 raze/ @[;0;:;0f]''[theta]];
+ J:sum (-1f%n:count y 0)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta;
+ if[l>0f;J+:(l%2*n)*x$x:2 raze/ @[;0;:;0f]''[theta]];
  J}
 logcost:rlogcost[0f]
 
@@ -126,7 +126,8 @@ learn:{[i;n;l;X;y]
  theta}
 
 /TODO: get more efficient method
-covm:{(1%count x 0)*x$\:/:x}
+covm:{(1%count x 0)*x$/:\:x}
+/cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}
 
 pca:{[k;X]
  Xn:zscore each X;
