@@ -31,5 +31,5 @@ theta:enlist (1+count X)#0f
 4000 .ml.gd[alpha;X;y]/ theta
 
 flip .qml.mlsq[flip .ml.addint X;flip y] / qml least squares
-flip .ml.lsq[y;.ml.addint X]             / normal equations
+flip .ml.mlsq[y;.ml.addint X]            / normal equations
 y lsq .ml.addint X                       / q least squares

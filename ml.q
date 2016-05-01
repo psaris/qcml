@@ -24,7 +24,7 @@ lingrad:rlingrad[0f]
 gd:{[alpha;X;y;theta] theta-alpha*lingrad[X;y;theta]}
 
 / normal equations
-lsq:{flip inv[y$/:y]$x$/:y}
+mlsq:{flip inv[y$/:y]$x$/:y}
 
 / feature normalization
 zscore:{(x-avg x)%dev x}
