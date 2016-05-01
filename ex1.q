@@ -14,7 +14,7 @@ alpha:.001                      / learning rate
 32.072733877455654 ~ .ml.lincost[X;y;enlist theta]   / least squares cost
 / plot cost function of each gd step
 .plot.plt raze (.ml.lincost[X;y]enlist@) each 20 .ml.gd[alpha;X;y]\theta
-.ml.gd[alpha;X;y]/[theta]       / obtain optimal theta
+.ml.gd[alpha;.ml.lingrad;X;y]/[theta] / obtain optimal theta
 / plot prediction of optimal theta
 .plot.plt X,.ml.gd[alpha;X;y]/[theta]$.ml.addint X
 flip .qml.mlsq[flip .ml.addint X;flip y] / qml least squares

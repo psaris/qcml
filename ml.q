@@ -20,8 +20,8 @@ rlingrad:{[l;X;y;theta]
  g}
 lingrad:rlingrad[0f]
 
-/ gradient descent
-gd:{[alpha;X;y;theta] theta-alpha*lingrad[X;y;theta]}
+/ gradient descent (gf: gradient function)
+gd:{[alpha;gf;X;y;theta] theta-alpha*gf[X;y;theta]}
 
 / normal equations
 mlsq:{flip inv[y$/:y]$x$/:y}
