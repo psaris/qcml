@@ -6,10 +6,11 @@ hmap:{(flip (til count x) cross reverse til count first x),enlist raze x}
 / plot X using (c)haracters limited to (w)idth and (h)eight
 / X can be x, (x;y) or (x;y;z)
 plot:{[w;h;c;X]
- cn:count c,:();                  / allow a single character
- if[0h<type X;X:(til count X;X)]; / turn x into (x;y)
- if[3>n:count X;X,:count[X 0]#1]; / turn (x;y) into (x;y;z)
- Z:@[X;0 1;nbin;(w;h)];          / allocate (x;y) to (w;h) bins
+ cn:count c,:();                      / allow a single character
+ if[0h<type X;X:enlist X];            / promote vector to matrix
+ if[1=count X;X:(til count X 0;X 0)]; / turn ,x into (x;y)
+ if[2=count X;X,:count[X 0]#1];       / turn (x;y) into (x;y;z)
+ Z:@[X;0 1;nbin;(w;h)];               / allocate (x;y) to (w;h) bins
  Z:flip key[Z],'sum each value Z:Z[2]g:group flip 2#Z; / sum overlapping z
  Z:@[Z;2;nbin;cn];                                     / binify z
  p:h#enlist w#" ";                                     / empty canvas
