@@ -95,6 +95,7 @@ checknngradients:{[l]
  ng:numgrad[f;theta] count[theta]#1e-4;
  (g;ng)}
 
+/ n can be any network topology dimension
 nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficieny
  theta:unraze[n] theta;
  x:last a:lpredict\[enlist[X],theta];
