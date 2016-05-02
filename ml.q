@@ -64,8 +64,8 @@ logcostgrad:rlogcostgrad[0f]
 
 onevsall:{[n;X;y;nlbls;l]
  theta:(1;1+count X)#0f;
- theta:(first .fmincg.fmincg[n;;first theta] .ml.rlogcostgrad[l;X] "f"$y=) peach 1+til nlbls;
-/ theta:(.qml.minx[`iter,50,`quiet`full;;enlist theta] {[X;y;l](rlrcost[X;y;l]@;enlist rlrgrad[X;y;l]@)}[l;1f,'X] "f"$y=0N!) peach 1+til nlbls;
+ f:.ml.rlogcostgrad[l;X];
+ theta:(first .fmincg.fmincg[n;;first theta] f "f"$y=) peach 1+til nlbls;
  theta}
 wmax:first idesc@                / where max?
 / predict each number and pick best
@@ -112,8 +112,8 @@ nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficieny
 / learn theta using qml conmax
 learn:{[i;n;l;X;ymat]
  theta:2 raze/ rweights'[-1_n;1_n];
- J:0N!rlrcost[l;X;ymat]unraze[n]@;
- G:0N!2 raze/ rlrgrad[l;X;ymat]unraze[n]@;
+ J:rlrcost[l;X;ymat]unraze[n]@;
+ G:2 raze/ rlrgrad[l;X;ymat]unraze[n]@;
  opts:`iter,i,`quiet`full;
  theta:.qml.minx[opts;(J;G);enlist theta];
  theta:first theta`last;
