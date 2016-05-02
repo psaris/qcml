@@ -59,6 +59,7 @@ rlogcostgrad:{[l;X;y;theta]
  J:sum rlogcost[l;X;y;2 enlist/ theta];
  g:rloggrad[l;X;y;2 enlist/ theta];
  (J;2 raze/ g)}
+logcostgrad:rlogcostgrad[0f]
 
 
 onevsall:{[n;X;y;nlbls;l]
