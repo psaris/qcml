@@ -160,6 +160,7 @@ Xt:flip "f"$raze each ldidx read1 `$"t10k-images-idx3-ubyte"
 / how well can we predict
 100*avg yt=p:.ml.predictonevsall[Xt].ml.unraze[n] theta
 
+p w:-4?where not yt=p
 (,') over plt each 4#flip Xt[;w]
 `p`a!(p 4#w;yt 4#w)
 
