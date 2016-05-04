@@ -113,7 +113,6 @@ theta:first .fmincg.fmincg[100;.ml.logcostgrad[X;Y];theta 0]
 \cd /Users/nick/q/ml/mnist
 plt:.plot.plot[55;28;.plot.c16] .plot.hmap flip 28 cut
 
-\
 / load training data
 Y:enlist y:"i"$ldidx read1 `$"train-labels-idx1-ubyte"
 X:flip "f"$raze each ldidx read1 `$"train-images-idx3-ubyte"
@@ -139,19 +138,45 @@ ymat:.ml.diag[last[n]#1f]@\:"i"$y
 / randomize weights to break symmetry and improve chances of finding a
 / global minimum
 theta:2 raze/ .ml.rweights'[-1_n;1_n];
-/ batch gradient descent
+
+/ batch gradient descent - steepest gradient (might find local minima)
 first .fmincg.fmincg[5;.ml.nncost[X;ymat;0;n];theta]
 
-/ stochastic gradient descent
-sgd:{[m;X;ymat;l;n;theta;i]first .fmincg.fmincg[m;.ml.nncost[X[;i];ymat[;i];l;n];theta]}
-theta:sgd[5;X;ymat;0f;n]/[theta;10000 cut {neg[x]?x} count first X]
+/ stochastic gradient descent -
+/ - jumpy (can find global minima)
+/ - converves faster
+/ on-line if n = 1
+/ mini-batch if n>1 (vectorize calculations)
+/ successively call f with theta and randomly sorted n-sized chunks
+/ minimization (f)unction, (s)ampling (f)unction
+/ bi(n)s
+\
+/ TODO: add learning rate
+sgd:{[f;sf;n;theta]theta f/ n cut sf count X 0}
+/ n epochs
+f:{first .fmincg.fmincg[5;.ml.nncost[X[;y];ymat[;y];0f;n];x]}
+
+/https://www.quora.com/Whats-the-difference-between-gradient-descent-and-stochastic-gradient-descent
+/ A: permutate, run n non-permuted epochs
+i:{neg[x]?x} count X 0;X:X[;i];ymat:ymat[;i];Y:Y[;i];y:Y 0
+theta:1 sgd[f;til;10000]/ theta
+/ B: run n permuted epochs
+theta:1 sgd[f;{neg[x]?x};10000]/ theta
+/ C: run n random (with replacement)
+theta:1 sgd[f;{x?x};10000]/ theta
+
+/ NOTE: can run any above example with cost threshold
+theta:(1f<first .ml.nncost[X;ymat;0f;n]@) sgd[f;{neg[x]?x};10000]/ theta
+
+/ what is the cost?
+first .ml.nncost[X;ymat;0f;n;theta]
 
 / how well did we learn
 100*avg y=p:.ml.predictonevsall[X].ml.unraze[n] theta
 
-p w:-4?where not y=p
-(,') over plt each 4#flip X[;w]
-`p`a!(p w;y w)
+p w:where not y=p
+plt X[;rw:rand w]
+`p`a!(p rw;y rw)
 
 / load testing data
 Yt:enlist yt:"i"$ldidx read1 `$"t10k-labels-idx1-ubyte"
@@ -160,7 +185,9 @@ Xt:flip "f"$raze each ldidx read1 `$"t10k-images-idx3-ubyte"
 / how well can we predict
 100*avg yt=p:.ml.predictonevsall[Xt].ml.unraze[n] theta
 
-p w:-4?where not yt=p
-(,') over plt each 4#flip Xt[;w]
-`p`a!(p 4#w;yt 4#w)
+p w:where not yt=p
+plt Xt[;rw:rand w]
+`p`a!(p rw;yt rw)
+
+/TODO: kmeans and pca
 
