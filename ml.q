@@ -83,7 +83,7 @@ rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 numgrad:{[f;x;e](.5%e)*{x[y+z]-x[y-z]}[f;x] peach diag e}
 
 checknngradients:{[l;n]
- theta:2 raze/ reverse .ml.rweights':[last n;1_ reverse n];
+ theta:2 raze/ .ml.rweights'[-1_n;1_n];
  X:flip rweights[-1+n 0;n 1];
  y:1+(1+til n 1) mod last n;
  ymat:flip diag[last[n]#1f]"i"$y-1;
