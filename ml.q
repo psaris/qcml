@@ -82,14 +82,11 @@ rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 / compute partial derivatives if e is a list
 numgrad:{[f;x;e](.5%e)*{x[y+z]-x[y-z]}[f;x] peach diag e}
 
-checknngradients:{[l]
- n: 3 5 3;
- theta1:rweights . n 0 1;
- theta2:rweights . n 1 2;
- X:flip rweights[-1+n 0;5];
- y:1+(1+til 5) mod 3;
- ymat:flip diag[n[2]#1f]"i"$y-1;
- theta:2 raze/ (theta1;theta2);
+checknngradients:{[l;n]
+ theta:2 raze/ reverse .ml.rweights':[last n;1_ reverse n];
+ X:flip rweights[-1+n 0;n 1];
+ y:1+(1+til n 1) mod last n;
+ ymat:flip diag[last[n]#1f]"i"$y-1;
  g:2 raze/ rloggrad[l;X;ymat] unraze[n] theta;
  f:(rlogcost[l;X;ymat]unraze[n]@);
  ng:numgrad[f;theta] count[theta]#1e-4;

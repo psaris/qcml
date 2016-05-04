@@ -4,7 +4,7 @@
 \l /Users/nick/q/qml/src/qml.q
 
 \
-.ml.checknngradients .1f
+.ml.checknngradients[.1f;3 5 3]
 
 \cd /Users/nick/Downloads/machine-learning-ex4/ex4
 X:(400#"F";",")0:`:ex4data1.csv
