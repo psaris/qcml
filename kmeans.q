@@ -1,10 +1,17 @@
 \d .ml
 
 edist:{[X;c] sum X*X-:c} / euclidian distance
-mdist:{[X;c] sum abs X-:c} / manhattan distance
+mdist:{[X;c] sum abs X-:c} / manhattan distance (taxicab metric)
 
+/ using the (d)istance (f)unction, cluster the data (X) into groups
+/ defined by the closest (C)entroid
 cgroup:{[df;X;C] group (first iasc@) each flip df[X] each flip C}
 
+/ k-(means|medians) algorithm
+
+/ using a (d)istance (f)ucntion and (m)ean/edian (f)unction, find
+/ (k)-centroids in the data (X) starting with a (potentially empty)
+/ (C)entroid list
 k:{[df;mf;k;X;C]
  if[not count C;C:X@\:neg[k]?count first X];
  C:mf''[X@\:value cgroup[df;X;C]];
@@ -13,11 +20,15 @@ k:{[df;mf;k;X;C]
 kmeans:k[edist;avg]
 kmedians:k[mdist;med]
 
+/ using the (d)istance (f)unction, cluster the data (X) into groups
+/ defined by the closest (C)entroid and return the distance
 cdist:{[df;X;C] k!df[X@\:value g] C@\:k:key g:cgroup[df;X;C]}
 ecdist:cdist[edist]
 mcdist:cdist[mdist]
 
-distortion:{[df;X;C] avg sum each d*d:value cdist[df;X;C]}
+/ using the (d)istance (f)unction, computer the total distortion (or
+/ distance) of data (X) when clustered to the nearest (C)entroid
+distortion:{[df;X;C] sum sum each value cdist[df;X;C]}
 edistortion:distortion[edist]
 mdistortion:distortion[mdist]
 
