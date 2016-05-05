@@ -2,6 +2,7 @@
 \l /Users/nick/q/qtips/qtips.q
 \l /Users/nick/q/ml/mnist/mnist.q
 \l /Users/nick/q/ml/plot.q
+\l /Users/nick/q/ml/kmeans.q
 \l /Users/nick/q/ml/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 \c 40 80
@@ -172,8 +173,12 @@ theta:(1f<first .ml.nncost[X;ymat;0f;n]@) sgd[f;{neg[x]?x};10000]/ theta
 first .ml.nncost[X;ymat;0f;n;theta]
 
 / how well did we learn
-100*avg y=p:.ml.predictonevsall[X].ml.unraze[n] theta
+100*avg y=p:.ml.predictonevsall[X].ml.mcut[n] theta
 
+/ visualize hidden features
+plt 1_first first .ml.mcut[n] theta
+
+/ view a few mistakes
 p w:where not y=p
 plt X[;rw:rand w]
 `p`a!(p rw;y rw)
@@ -183,11 +188,25 @@ Yt:enlist yt:"i"$ldidx read1 `$"t10k-labels-idx1-ubyte"
 Xt:flip "f"$raze each ldidx read1 `$"t10k-images-idx3-ubyte"
 
 / how well can we predict
-100*avg yt=p:.ml.predictonevsall[Xt].ml.unraze[n] theta
+100*avg yt=p:.ml.predictonevsall[Xt].ml.mcut[n] theta
 
+/ view a few mistakes
 p w:where not yt=p
 plt Xt[;rw:rand w]
 `p`a!(p rw;yt rw)
 
 /TODO: kmeans and pca
+
+plt:.plot.plot[55;28;1_.plot.c16]
+C:(1 3 8f;9 2 5f)
+plt C
+X:raze each C + 2 3 #100 cut .stat.bm 600?1f
+plt X
+
+/ euler distance
+.ml.kmeans[3;X]\[()]
+
+/ manhattan distance
+.ml.kmedians[3;X]\[()]
+
 

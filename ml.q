@@ -72,8 +72,8 @@ wmax:first idesc@                / where max?
 predictonevsall:{[X;theta]wmax each flip X lpredict/ theta}
 
 
-/ cut a single vector
-unraze:{[n;x](1+-1_n) cut' (sums {x*y+1} prior -1_n) cut x}
+/ cut a vector into n matrices
+mcut:{[n;x](1+-1_n) cut' (sums {x*y+1} prior -1_n) cut x}
 diag:{$[0h>t:type x;x;@[n#abs[t]$0;;:;]'[til n:count x;x]]}
 
 rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
@@ -87,14 +87,14 @@ checknngradients:{[l;n]
  X:flip rweights[-1+n 0;n 1];
  y:1+(1+til n 1) mod last n;
  ymat:flip diag[last[n]#1f]"i"$y-1;
- g:2 raze/ rloggrad[l;X;ymat] unraze[n] theta;
- f:(rlogcost[l;X;ymat]unraze[n]@);
+ g:2 raze/ rloggrad[l;X;ymat] mcut[n] theta;
+ f:(rlogcost[l;X;ymat]mcut[n]@);
  ng:numgrad[f;theta] count[theta]#1e-4;
  (g;ng)}
 
 / n can be any network topology dimension
 nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficieny
- theta:unraze[n] theta;
+ theta:mcut[n] theta;
  x:last a:lpredict\[enlist[X],theta];
  n:count ymat 0;
  J:sum (-1f%n)*sum each (ymat*log x)+(1f-ymat)*log 1f-x;
@@ -110,8 +110,8 @@ nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficieny
 / learn theta using qml conmax
 learn:{[i;n;l;X;ymat]
  theta:2 raze/ rweights'[-1_n;1_n];
- J:rlrcost[l;X;ymat]unraze[n]@;
- G:2 raze/ rlrgrad[l;X;ymat]unraze[n]@;
+ J:rlrcost[l;X;ymat]mcut[n]@;
+ G:2 raze/ rlrgrad[l;X;ymat]mcut[n]@;
  opts:`iter,i,`quiet`full;
  theta:.qml.minx[opts;(J;G);enlist theta];
  theta:first theta`last;
