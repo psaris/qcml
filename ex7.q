@@ -5,7 +5,7 @@
 
 \
 \cd /Users/nick/Downloads/machine-learning-ex7/ex7
-plt:.plot.plot[50;20;"*"]
+plt:.plot.plot[50;20;1_.plot.c16]
 X:(2#"F";",")0:`:ex7data2.csv
 plt X
 C:flip (3 3;6 2;8 5)
