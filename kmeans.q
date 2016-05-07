@@ -26,12 +26,7 @@ cdist:{[df;X;C] k!df[X@\:value g] C@\:k:key g:cgroup[df;X;C]}
 ecdist:cdist[edist]
 mcdist:cdist[mdist]
 
-/ using the (d)istance (f)unction, computer the total distortion (or
-/ distance) of data (X) when clustered to the nearest (C)entroid
-distortion:{[df;X;C] sum sum each value cdist[df;X;C]}
-edistortion:distortion[edist]
-mdistortion:distortion[mdist]
-
+distortion:sum sum each
 
 \
 
@@ -45,21 +40,9 @@ show flip C:.ml.kmedians[X]/[4]
 
 X:(x;y;z)
 (.ml.ecdist[X] .ml.kmeans[X]@) each 1+til count X 0
-(.ml.edistortion[X] .ml.kmeans[X]@) each 1+til count X 0
+(.ml.distortion .ml.ecdist[X] .ml.kmeans[X]@) each 1+til count X 0
 
 \l /Users/nick/q/ml/plot.q
 plt:.plot.plot[49;25;1_.plot.c10]
 plt (x;y;z)
 plt .ml.kmeans[(x;y;z)] 3
-
-/ get http data from (h)ost with (l)ocaction
-hget:{[h;l] (`$":http://",h)"GET ",l," HTTP/1.1\r\nHost:",h,"\r\n\r\n"}
-
-/ classic machine learning iris data
-s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
-iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",") 0: -1_last "\r\n" vs s
-X:value flip 4#/:iris
-plt X 3
-flip .ml.kmeans[X]/[3]
-
-.ml.ecdist[X] .ml.kmeans[X]/[3]
