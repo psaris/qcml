@@ -27,6 +27,8 @@ X:(.stat.bm 10000?) each 1 1f
 plt X
 
 / correlate x and y
+/ TODO: implement copula?
+/ http://www.sitmo.com/article/generating-correlated-random-numbers/
 rho:.8
 X[0]:(rho;sqrt 1-rho*rho)$X
 
@@ -112,6 +114,7 @@ theta:first .fmincg.fmincg[100;.ml.logcostgrad[X;Y];theta 0]
 / multiple runs of logistic regression (one for each digit)
 
 \cd /Users/nick/q/ml/mnist
+/ redefine plot (to include space)
 plt:.plot.plot[55;28;.plot.c16] .plot.hmap flip 28 cut
 
 / load training data
@@ -145,7 +148,7 @@ first .fmincg.fmincg[5;.ml.nncost[X;ymat;0;n];theta]
 
 / stochastic gradient descent -
 / - jumpy (can find global minima)
-/ - converves faster
+/ - converges faster
 / on-line if n = 1
 / mini-batch if n>1 (vectorize calculations)
 / successively call f with theta and randomly sorted n-sized chunks
@@ -195,18 +198,28 @@ p w:where not yt=p
 plt Xt[;rw:rand w]
 `p`a!(p rw;yt rw)
 
-/TODO: kmeans and pca
+/ k-means
 
+/ redefine plot (to drop space)
 plt:.plot.plot[55;28;1_.plot.c16]
-C:(1 3 8f;9 2 5f)
-plt C
-X:raze each C + 2 3 #100 cut .stat.bm 600?1f
+k:3 / 3 centroids
+
+C:"f"$k?/:2#20 / initial centroids
+X:raze each C,'C + (2;k) #100 cut .stat.bm (100*2*k)?1f
 plt X
 
 / euler distance
-.ml.kmeans[3;X]\[()]
+.ml.kmeans[X]\[k]
 
-/ manhattan distance
-.ml.kmedians[3;X]\[()]
+/ manhattan distance (taxicab metric)
+/ NOTE: picks x and y from data (but not necessarily (x;y))
+.ml.kmedians[X]\[k]
+
+/TODO: kmeans pick k most useful colors
+
+f:`:/Users/nick/Documents/plot/Nick_kx_picture.jpg
+
+
+/ TODO: pca? (must use qml
 
 

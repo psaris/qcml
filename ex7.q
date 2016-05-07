@@ -13,10 +13,10 @@ C:flip (3 3;6 2;8 5)
 / closest centroids
 (0 2 1!1#'0 1 2)~.ml.cgroup[.ml.edist;3#'X;C]
 / new centroids
-.ml.kmeans[3;X;C]
+.ml.kmeans[X;C]
 
 / 10 steps of k-means
-10 .ml.kmeans[3;X]\C
+10 .ml.kmeans[X]\C
 
 / 128x128 r g b (24 bit = 3*8 bits)
 / 128*128*24 = 393,216
@@ -28,7 +28,7 @@ r2g:0.2989 0.5870 0.1140
 .plot.plot[255;128;.plot.c89] .plot.hmap 128 cut r2g$X
 
 / map to 4 bits
-C:10 .ml.kmeans[16;X]/()
+C:10 .ml.kmeans[X]/16
 / compress information
 / 16*24+128*128*4 = 65,920
 g:.ml.cgroup[.ml.edist;X;C]

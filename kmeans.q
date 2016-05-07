@@ -10,10 +10,10 @@ cgroup:{[df;X;C] group (first iasc@) each flip df[X] each flip C}
 / k-(means|medians) algorithm
 
 / using a (d)istance (f)ucntion and (m)ean/edian (f)unction, find
-/ (k)-centroids in the data (X) starting with a (potentially empty)
-/ (C)entroid list
-k:{[df;mf;k;X;C]
- if[not count C;C:X@\:neg[k]?count first X];
+/ (k)-centroids in the data (X) starting with a (C)entroid list
+/ if C is an atom, use it to initialize C with random elements
+k:{[df;mf;X;C]
+ if[0h>type C;C:X@\:neg[C]?count X 0];
  C:mf''[X@\:value cgroup[df;X;C]];
  C}
 
@@ -41,16 +41,16 @@ z:3 1 4 11 09 10 108 105 103 108
 X:(x;y;z)
 C:()
 
-show flip C:.ml.kmedians[4;X]/[()]
+show flip C:.ml.kmedians[X]/[4]
 
 X:(x;y;z)
-(')[.ml.ecdist[X];.ml.kmeans[;X;()]] each 1+til count X 0
-(')[.ml.edistortion[X];.ml.kmeans[;X;()]] each 1+til count X 0
+(.ml.ecdist[X] .ml.kmeans[X]@) each 1+til count X 0
+(.ml.edistortion[X] .ml.kmeans[X]@) each 1+til count X 0
 
 \l /Users/nick/q/ml/plot.q
 plt:.plot.plot[49;25;1_.plot.c10]
 plt (x;y;z)
-plt .ml.kmeans[3;(x;y;z)]/[()]
+plt .ml.kmeans[(x;y;z)] 3
 
 / get http data from (h)ost with (l)ocaction
 hget:{[h;l] (`$":http://",h)"GET ",l," HTTP/1.1\r\nHost:",h,"\r\n\r\n"}
@@ -60,6 +60,6 @@ s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
 iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",") 0: -1_last "\r\n" vs s
 X:value flip 4#/:iris
 plt X 3
-flip .ml.kmeans[3;X]/[()]
+flip .ml.kmeans[X]/[3]
 
-.ml.ecdist[X] .ml.kmeans[3;X]/[()]
+.ml.ecdist[X] .ml.kmeans[X]/[3]
