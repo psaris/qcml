@@ -208,18 +208,26 @@ C:"f"$k?/:2#20 / initial centroids
 X:raze each C,'C + (2;k) #100 cut .stat.bm (100*2*k)?1f
 plt X
 
-/ euler distance
+/ euler distance last elements starts as atom (specifying the number
+/ of centroids) but becomes the actual centroids after the initial
+/ iteration.
 .ml.kmeans[X]\[k]
 
 / manhattan distance (taxicab metric)
 / NOTE: picks x and y from data (but not necessarily (x;y))
 .ml.kmedians[X]\[k]
 
-/TODO: kmeans pick k most useful colors
+/ get http data from (h)ost with (l)ocaction
+hget:{[h;l] (`$":http://",h)"GET ",l," HTTP/1.1\r\nHost:",h,"\r\n\r\n"}
 
-f:`:/Users/nick/Documents/plot/Nick_kx_picture.jpg
+/ classic machine learning iris data
+s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
+iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",") 0: -1_last "\r\n" vs s
+X:value flip 4#/:iris
+plt X 3
+flip .ml.kmeans[X]/[3]
 
+.ml.ecdist[X] .ml.kmeans[X]/[3]
 
-/ TODO: pca? (must use qml
-
+/ TODO: kmeans to compress RGB, PCA for reduce dimensions
 
