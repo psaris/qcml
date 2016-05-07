@@ -41,22 +41,25 @@ z:3 1 4 11 09 10 108 105 103 108
 X:(x;y;z)
 C:()
 
-show flip C:kmedians[4;X]/[()]
+show flip C:.ml.kmedians[4;X]/[()]
 
 X:(x;y;z)
-(')[ecdist[X];kmeans[;X;()]] each 1+til count X 0
-(')[edistortion[X];kmeans[;X;()]] each 1+til count X 0
+(')[.ml.ecdist[X];.ml.kmeans[;X;()]] each 1+til count X 0
+(')[.ml.edistortion[X];.ml.kmeans[;X;()]] each 1+til count X 0
 
-iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",")0:`:/Users/nick/q/bezdekIris.data
-X:iris c:`slength`swidth`plength`pwidth
-
-\ts:1000 cdist[d] kmeans[3;d:flip 4#/:iris]/[()]
-flip kmeans[3;X]/[()]
 \l /Users/nick/q/ml/plot.q
-plt:.plot.plot[74;24] ".-+*#@"
-plt X
-
+plt:.plot.plot[49;25;1_.plot.c10]
 plt (x;y;z)
-plt kmeans[3;(x;y;z)]/[()]
+plt .ml.kmeans[3;(x;y;z)]/[()]
 
-9612 8864
+/ get http data from (h)ost with (l)ocaction
+hget:{[h;l] (`$":http://",h)"GET ",l," HTTP/1.1\r\nHost:",h,"\r\n\r\n"}
+
+/ classic machine learning iris data
+s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
+iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",") 0: -1_last "\r\n" vs s
+X:value flip 4#/:iris
+plt X 3
+flip .ml.kmeans[3;X]/[()]
+
+.ml.ecdist[X] .ml.kmeans[3;X]/[()]
