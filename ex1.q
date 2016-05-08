@@ -11,9 +11,9 @@ X:1#data
 y:-1#data
 theta:(1;1+count X)#0f          / initial guess
 alpha:.001                      / learning rate
-32.072733877455654 ~ .ml.lincost[X;y;enlist theta]   / least squares cost
+32.072733877455654 ~ .ml.lincost[X;y;theta]   / least squares cost
 / plot cost function of each gd step
-.plot.plt raze (.ml.lincost[X;y]enlist@) each 20 .ml.gd[alpha;.ml.lingrad[X;y]]\theta
+.plot.plt .ml.lincost[X;y] each 20 .ml.gd[alpha;.ml.lingrad[X;y]]\theta
 .ml.gd[alpha;.ml.lingrad[X;y]]/[theta] / obtain optimal theta
 / plot prediction of optimal theta
 .plot.plt X,.ml.gd[alpha;.ml.lingrad[X;y]]/[theta]$.ml.addint X

@@ -8,8 +8,8 @@ predict:{[X;theta]theta$addint X}
 
 / regularized linear regression cost
 rlincost:{[l;X;y;theta]
- J:sum (1f%2*n:count y 0)*sum y$/:y-:X predict/ theta;
- if[l>0f;J+:(l%2*n)*x$x:2 raze/ @[;0;:;0f]''[theta]];
+ J:sum (1f%2*n:count y 0)*sum y$/:y-:predict[X;theta];
+ if[l>0f;J+:(l%2*n)*x$x:raze @[;0;:;0f]'[theta]];
  J}
 lincost:rlincost[0f]
 

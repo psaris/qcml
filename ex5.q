@@ -13,5 +13,5 @@ X:1#data
 y:-1#data
 theta:(1;1+count X)#1f
 
-303.99319222026429 ~ .ml.rlincost[1f;X;y;enlist theta]
+303.99319222026429 ~ .ml.rlincost[1f;X;y;theta]
 -15.303015674201186 598.25074417270355 ~ first .ml.rlingrad[1f;X;y;theta]
