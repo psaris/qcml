@@ -38,7 +38,7 @@ lpredict:(')[sigmoid;predict]
 / regularized logistic regression lrcost
 rlogcost:{[l;X;y;theta]
  J:sum (-1f%n:count y 0)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta;
- if[l>0f;J+:(l%2*n)*x$x:2 raze/ @[;0;:;0f]''[theta]];
+ if[l>0f;J+:(l%2*n)*x$x:2 raze/ @[;0;:;0f]''[theta]]; / regularization
  J}
 logcost:rlogcost[0f]
 
@@ -47,11 +47,10 @@ rloggrad:{[l;X;y;theta]
  n:count y 0;
  a:lpredict\[enlist[X],theta];
  d:last[a]-y;
- a:{((1;count x 0)#1f),x}each -1_a;
+ a:addint each -1_a;
  d:{[d;theta;a]1_(flip[theta]$d)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
  g:(a($/:)'d)%n;
- / regularization
- if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]];
+ if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]]; / regularization
  g}
 loggrad:rloggrad[0f]
 
@@ -98,13 +97,12 @@ nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficieny
  x:last a:lpredict\[enlist[X],theta];
  n:count ymat 0;
  J:sum (-1f%n)*sum each (ymat*log x)+(1f-ymat)*log 1f-x;
- if[l>0f;J+:(l%2*n)*{x$x}2 raze/ @[;0;:;0f]''[theta]];
+ if[l>0f;J+:(l%2*n)*{x$x}2 raze/ @[;0;:;0f]''[theta]]; / regularization
  d:x-ymat;
- a:{((1;count x 0)#1f),x}each -1_a;
+ a:addint each -1_a;
  d:{[d;theta;a]1_(flip[theta]$d)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
  g:(a($/:)'d)%n;
- / regularization
- if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]];
+ if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]]; / regularization
  (J;2 raze/ g)}
 
 / learn theta using qml conmax
