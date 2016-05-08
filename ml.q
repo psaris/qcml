@@ -35,10 +35,13 @@ sigmoid:{1f%1f+exp neg x}
 / logistic regression predict
 lpredict:(')[sigmoid;predict]
 
-/ regularized logistic regression lrcost
+/ logistic regression cost
+lcost:{sum (-1f%count y 0)*sum each (y*log x)+(1f-y)*log 1f-x}
+
+/ regularized logistic regression cost
 rlogcost:{[l;X;y;theta]
- J:sum (-1f%n:count y 0)*sum (y*log x)+(1f-y)*log 1f-x:X lpredict/ theta;
- if[l>0f;J+:(l%2*n)*x$x:2 raze/ @[;0;:;0f]''[theta]]; / regularization
+ J:lcost[X lpredict/ theta;y];
+ if[l>0f;J+:(l%2*count y 0)*x$x:2 raze/ @[;0;:;0f]''[theta]]; / regularization
  J}
 logcost:rlogcost[0f]
 
@@ -92,11 +95,11 @@ checknngradients:{[l;n]
  (g;ng)}
 
 / n can be any network topology dimension
-nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficieny
+nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficiency
  theta:mcut[n] theta;
  x:last a:lpredict\[enlist[X],theta];
  n:count ymat 0;
- J:sum (-1f%n)*sum each (ymat*log x)+(1f-ymat)*log 1f-x;
+ J:lcost[x;ymat];
  if[l>0f;J+:(l%2*n)*{x$x}2 raze/ @[;0;:;0f]''[theta]]; / regularization
  d:x-ymat;
  a:addint each -1_a;
