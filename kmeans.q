@@ -1,7 +1,7 @@
 \d .ml
 
-edist:{[X;c] sum X*X-:c} / euclidian distance
-mdist:{[X;c] sum abs X-:c} / manhattan distance (taxicab metric)
+edist:{sum x*x-:y}              / euclidian distance
+mdist:{sum abs x-y}             / manhattan distance (taxicab metric)
 
 / using the (d)istance (f)unction, cluster the data (X) into groups
 / defined by the closest (C)entroid
