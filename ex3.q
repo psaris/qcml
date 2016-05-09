@@ -20,4 +20,4 @@ theta:.ml.onevsall[200;X;y;lbls;lambda] / train one set of parameters for each n
 / mistakes
 w:-4?where not first[y]=p:lbls .ml.predictonevsall[X] enlist theta / what percent did we get correct?
 (,') over plt each flip X[;w]
-`p`a!(p w;first[y] w)
+flip([]p;first[y]) w

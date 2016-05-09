@@ -39,4 +39,4 @@ plt 1_first theta1
 \c 100 200
 w:-4?where not y=p:1+.ml.predictonevsall[X].ml.mcut[n] theta
 (,') over plt each flip X[;w]
-`p`a!(p 4#w;y 4#w)
+flip([]p;y)w
