@@ -12,12 +12,12 @@ y:(1#"F";",")0:`:ex3data2.csv  / integers 1-10 (10=0)
 plt:(.plot.plot[20;20;.plot.c16] .plot.hmap 20 cut)
 (,') over  plt each flip X[;-4?til count X 0]
 
-nlbls:10
+lbls:1+til 10
 lambda:1
-theta:.ml.onevsall[200;X;y;nlbls;lambda] / train one set of parameters for each number
-100*avg first[y]=1+.ml.predictonevsall[X] enlist theta / what percent did we get correct?
+theta:.ml.onevsall[200;X;y;lbls;lambda] / train one set of parameters for each number
+100*avg first[y]=lbls .ml.predictonevsall[X] enlist theta / what percent did we get correct?
 
 / mistakes
-w:-4?where not first[y]=p:1+.ml.predictonevsall[X] enlist theta / what percent did we get correct?
+w:-4?where not first[y]=p:lbls .ml.predictonevsall[X] enlist theta / what percent did we get correct?
 (,') over plt each flip X[;w]
 `p`a!(p w;first[y] w)

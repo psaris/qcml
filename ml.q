@@ -64,10 +64,10 @@ rlogcostgrad:{[l;X;y;theta]
 logcostgrad:rlogcostgrad[0f]
 
 
-onevsall:{[n;X;y;nlbls;l]
+onevsall:{[n;X;y;lbls;l]
  theta:(1;1+count X)#0f;
  f:.ml.rlogcostgrad[l;X];
- theta:(first .fmincg.fmincg[n;;first theta] f "f"$y=) peach 1+til nlbls;
+ theta:(first .fmincg.fmincg[n;;first theta] f "f"$y=) peach lbls;
  theta}
 wmax:first idesc@                / where max?
 / predict each number and pick best
