@@ -119,9 +119,9 @@ learn:{[i;n;l;X;ymat]
  theta}
 
 / learn theta using fmincg
-learn:{[i;n;l;X;y]
+learn:{[i;n;l;X;ymat]
  theta:2 raze/ rweights'[-1_n;1_n];
- F:nncost[X;y;l;n];
+ F:nncost[X;maty;l;n];
  theta:.fmincg.fmincg[i;F;theta];
  theta}
 
