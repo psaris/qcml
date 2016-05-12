@@ -155,6 +155,9 @@ p w:where not y=p
 plt X[;i:rand w]
 ([]p;y) i
 
+/ confirm analytic gradient is equal to numeric gradient
+.ml.checknngradients[.1f;3 5 3]
+
 / learn (neural network with 1 hidden layer)
 n:784 30 10;
 ymat:.ml.diag[last[n]#1f]@\:"i"$y
