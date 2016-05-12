@@ -92,9 +92,9 @@ checknngradients:{[l;n]
  X:flip rweights[-1+n 0;n 1];
  y:1+(1+til n 1) mod last n;
  ymat:flip diag[last[n]#1f]"i"$y-1;
- g:2 raze/ rloggrad[l;X;ymat] mcut[n] theta;
+ g:2 raze/ rloggrad[l;X;ymat] mcut[n] theta; / analytic gradient
  f:(rlogcost[l;X;ymat]mcut[n]@);
- ng:numgrad[f;theta] count[theta]#1e-4;
+ ng:numgrad[f;theta] count[theta]#1e-4; / numerical gradient
  (g;ng)}
 
 / n can be any network topology dimension
