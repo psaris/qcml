@@ -59,26 +59,29 @@ loggrad:rloggrad[0f]
 
 rlogcostgrad:{[l;X;y;theta]
  J:sum rlogcost[l;X;y;2 enlist/ theta];
- g:rloggrad[l;X;y;2 enlist/ theta];
- (J;2 raze/ g)}
+ g:2 raze/ rloggrad[l;X;y;2 enlist/ theta];
+ (J;g)}
 logcostgrad:rlogcostgrad[0f]
 
+rlogcostgradf:{[l;X;y]
+ Jf:(sum rlogcost[l;X;y]enlist enlist@);
+ gf:(raze rloggrad[l;X;y]enlist enlist @);
+ (Jf;gf)}
+logcostgradf:rlogcostgradf[0f]
 
-onevsall:{[n;X;y;lbls;l]
- theta:(1;1+count X)#0f;
- f:.ml.rlogcostgrad[l;X];
- theta:(first .fmincg.fmincg[n;;first theta] f "f"$y=) peach lbls;
- theta}
-wmax:first idesc@                / where max?
+rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
+
+/ (m)inimization (f)unction, (c)ost (g)radient (f)unction
+onevsall:{[mf;cgf;y;lbls] (mf cgf "f"$y=) peach lbls}
+
+wmax:first idesc@               / where max?
+
 / predict each number and pick best
 predictonevsall:{[X;theta]wmax each flip X lpredict/ theta}
-
 
 / cut a vector into n matrices
 mcut:{[n;x](1+-1_n) cut' (sums {x*y+1} prior -1_n) cut x}
 diag:{$[0h>t:type x;x;@[n#abs[t]$0;;:;]'[til n:count x;x]]}
-
-rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 
 / (f)unction, x, (e)psilon
 / compute partial derivatives if e is a list
@@ -95,7 +98,7 @@ checknngradients:{[l;n]
  (g;ng)}
 
 / n can be any network topology dimension
-nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficiency
+nncost:{[l;n;X;ymat;theta] / combined cost and gradient for efficiency
  theta:mcut[n] theta;
  x:last a:lpredict\[enlist[X],theta];
  n:count ymat 0;
@@ -108,22 +111,10 @@ nncost:{[X;ymat;l;n;theta] / combined cost and gradient for efficiency
  if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]]; / regularization
  (J;2 raze/ g)}
 
-/ learn theta using qml conmax
-learn:{[i;n;l;X;ymat]
- theta:2 raze/ rweights'[-1_n;1_n];
- J:rlrcost[l;X;ymat]mcut[n]@;
- G:2 raze/ rlrgrad[l;X;ymat]mcut[n]@;
- opts:`iter,i,`quiet`full;
- theta:.qml.minx[opts;(J;G);enlist theta];
- theta:first theta`last;
- theta}
-
-/ learn theta using fmincg
-learn:{[i;n;l;X;ymat]
- theta:2 raze/ rweights'[-1_n;1_n];
- F:nncost[X;maty;l;n];
- theta:.fmincg.fmincg[i;F;theta];
- theta}
+nncostf:{[l;n;X;ymat]
+ Jf:(first nncost[l;n;X;ymat]@);
+ gf:(last nncost[l;n;X;ymat]@);
+ (Jf;gf)}
 
 /TODO: get more efficient method
 covm:{(1%count x 0)*x$/:\:x}

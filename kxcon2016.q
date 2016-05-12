@@ -7,6 +7,7 @@
 \l /Users/nick/q/qml/src/qml.q
 \c 40 80
 
+\
 / define a plotting function
 plt:.plot.plot[49;25;1_.plot.c16]
 
@@ -23,6 +24,14 @@ plt .stat.bm 10000?1f
 / NOTE: matrix variables are uppercase
 X:(.stat.bm 10000?) each 1 1f
 
+/ NOTE: suppress the desire to flip matrices.
+
+/ Matlab/Octave/R all store data in columns
+
+/ q needs the ability to tag matrices so they can be displayed (not
+/ stored) flipped
+flip X
+
 / plot x,y
 plt X
 
@@ -32,26 +41,30 @@ plt X
 rho:.8
 X[0]:(rho;sqrt 1-rho*rho)$X
 
-/ NOTE: supress the desire to flip matrices. Matlab/Octave/R all have
-/ store data in columns q needs the ability to tag matrices so they
-/ can be displayed (not stored) flipped
-flip X
-
 / plot correlated x,y
 plt X
+
+/ NOTE: use +$+ for both dot product and matrix multiplication
 
 / fit a line with intercept
 Y:-1#X
 X:1#X
-Y lsq .ml.addint X
+show theta:Y lsq .ml.addint X
+
+/ plot fitted line
+plt X,.ml.predict[X] theta
 
 / fast but not numerically stable
 .ml.mlsq
 
-/ NOTE: use 'X$/:Y' instead of 'Y mmu flip X' so we don't have to flip
-/ large matrices
-Y mmu flip X
-X$/:Y
+/ NOTE: use 'X$/:Y' instead of 'Y mmu flip X' to avert flipping large
+/ matrices
+\ts Y mmu flip X
+\ts X$/:Y
+
+/ qml uses QR decomposition for a more numerically stable fit, but it
+/ makes us flip both X and Y
+\ts flip .qml.mlsq[flip .ml.addint X;flip Y]
 
 / nice to have closed form solution, but what if we don't?
 
@@ -59,7 +72,9 @@ X$/:Y
 alpha:.1
 theta:1 2#0f
 / n steps
-10 .ml.gd[alpha;.ml.lingrad[X;Y]]/ theta
+2 .ml.gd[alpha;.ml.lingrad[X;Y]]/ theta
+/ until cost within tolerance
+(.4>.ml.lincost[X;Y]@) .ml.gd[alpha;.ml.lingrad[X;Y]]/ theta
 / until convergence
 .ml.gd[alpha;.ml.lingrad[X;Y]] over theta
 
@@ -68,12 +83,13 @@ theta:1 2#0f
 
 plt .ml.sigmoid .1*-50+til 100
 
+/ classification
 X:30+100*(100?1f;.01*til 100)
 Y:enlist .ml.sigmoid .1*-150+sum X
 plt X,Y
 
 / logistic regression cost
-/ NOTE: accepts a list of thetas
+/ NOTE: accepts a list of thetas (in preparation for nn)
 theta: (1;3)#0f;
 .ml.logcost[X;Y;enlist theta]
 
@@ -89,8 +105,7 @@ theta: (1;3)#0f;
 / we can use qml and the just the cost function to compute gradient
 / and optimal step size
 
-/ rk:runge–kutta, slp: success linear programming
-opts:`iter,1000,`full`quiet
+opts:`iter,1000,`full`quiet /`rk`slp`tol,1e-8
 / use cost function only
 f:.ml.logcost[X;Y]enlist enlist@
 .qml.minx[opts;f;theta]
@@ -114,37 +129,42 @@ theta:first .fmincg.fmincg[100;.ml.logcostgrad[X;Y];theta 0]
 / multiple runs of logistic regression (one for each digit)
 
 \cd /Users/nick/q/ml/mnist
-/ redefine plot (to include space)
-plt:.plot.plot[55;28;.plot.c16] .plot.hmap flip 28 cut
 
 / load training data
 Y:enlist y:"i"$ldidx read1 `$"train-labels-idx1-ubyte"
 X:flip "f"$raze each ldidx read1 `$"train-images-idx3-ubyte"
 
 / visualize data
-plt  X[;i:rand til count X 0]
-plt  X[;i]
+/ redefine plot (to include space)
+plt:.plot.plot[55;28;.plot.c16] .plot.hmap flip 28 cut
+plt  X[;rand til count X 0]
 
 / learn (one vs all)
-nlbls:10
+lbls:til 10
 lambda:1
-theta:.ml.onevsall[20;X;Y;nlbls;lambda] / train one set of parameters for each number
+theta:(1;1+count X)#0f
+mf:(first .fmincg.fmincg[20;;theta 0]@) / pass min func (composition) as parameter
+cgf:.ml.rlogcostgrad[lambda;X] / cost gradient function
+/ train one set of parameters for each number
+theta:.ml.onevsall[mf;cgf;Y;lbls]
 / NOTE: peach across digits
-100*avg y=p:1+.ml.predictonevsall[X] enlist theta / what percent did we get correct?
+100*avg y=p:.ml.predictonevsall[X] enlist theta / what percent did we get correct?
 
-p w:-4?where not y=p
-(,') over plt each flip X[;w]
-`p`a!(p w;y w)
+/ what did we get wrong?
+p w:where not y=p
+plt X[;i:rand w]
+([]p;y) i
 
 / learn (neural network with 1 hidden layer)
 n:784 30 10;
 ymat:.ml.diag[last[n]#1f]@\:"i"$y
-/ randomize weights to break symmetry and improve chances of finding a
-/ global minimum
 theta:2 raze/ .ml.rweights'[-1_n;1_n];
 
 / batch gradient descent - steepest gradient (might find local minima)
-first .fmincg.fmincg[5;.ml.nncost[X;ymat;0;n];theta]
+first .fmincg.fmincg[1;.ml.nncost[0f;n;X;ymat];theta]
+
+/ TODO fix `limit error
+/.qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;ymat];theta]
 
 / stochastic gradient descent -
 / - jumpy (can find global minima)
@@ -158,7 +178,7 @@ first .fmincg.fmincg[5;.ml.nncost[X;ymat;0;n];theta]
 / TODO: add learning rate
 sgd:{[f;sf;n;theta]theta f/ n cut sf count X 0}
 / n epochs
-f:{first .fmincg.fmincg[5;.ml.nncost[X[;y];ymat[;y];0f;n];x]}
+f:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];ymat[;y]];x]}
 
 /https://www.quora.com/Whats-the-difference-between-gradient-descent-and-stochastic-gradient-descent
 / A: permutate, run n non-permuted epochs
@@ -170,10 +190,10 @@ theta:1 sgd[f;{neg[x]?x};10000]/ theta
 theta:1 sgd[f;{x?x};10000]/ theta
 
 / NOTE: can run any above example with cost threshold
-theta:(1f<first .ml.nncost[X;ymat;0f;n]@) sgd[f;{neg[x]?x};10000]/ theta
+theta:(1f<first .ml.nncost[0f;n;X;ymat]@) sgd[f;{neg[x]?x};10000]/ theta
 
 / what is the cost?
-first .ml.nncost[X;ymat;0f;n;theta]
+first .ml.nncost[0f;n;X;ymat;theta]
 
 / how well did we learn
 100*avg y=p:.ml.predictonevsall[X].ml.mcut[n] theta
@@ -184,7 +204,7 @@ plt 1_first first .ml.mcut[n] theta
 / view a few mistakes
 p w:where not y=p
 plt X[;rw:rand w]
-`p`a!(p rw;y rw)
+([]p;y) rw
 
 / load testing data
 Yt:enlist yt:"i"$ldidx read1 `$"t10k-labels-idx1-ubyte"
@@ -196,7 +216,7 @@ Xt:flip "f"$raze each ldidx read1 `$"t10k-images-idx3-ubyte"
 / view a few mistakes
 p w:where not yt=p
 plt Xt[;rw:rand w]
-`p`a!(p rw;yt rw)
+([]p;yt) rw
 
 / k-means
 

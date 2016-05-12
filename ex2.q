@@ -15,12 +15,12 @@ theta:(1;1+count X)#0f
 .ml.loggrad[X;y;enlist theta]        / logistic regression gradient
 
 / rk:runge–kutta, slp: success linear programming
-opts:`iter,7000,`full`quiet`rk
- / find function minimum
+opts:`quiet`rk`iter,7000
+/ find function minimum
 theta:(1;1+count X)#0f
 .qml.minx[opts;.ml.logcost[X;y]enlist enlist@;theta]
- / use gradient to improve efficiency
-.qml.minx[opts][(.ml.logcost[X;y]enlist enlist@;raze .ml.loggrad[X;y]enlist enlist@);theta]
+/ use gradient to improve efficiency
+.qml.minx[opts;.ml.logcostgradf[X;y];theta]
 
 / compare plots
 theta:first .qml.minx[opts;.ml.logcost[X;y]enlist enlist@;theta]

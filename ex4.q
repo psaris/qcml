@@ -21,14 +21,14 @@ ymat:.ml.diag[10#1f]@\:"i"$y-1
 
 n:400 25 10;
 ymat:.ml.diag[last[n]#1f]@\:"i"$y-1
-\ts sum each   sum each g:.ml.mcut[n] last .ml.nncost[X;ymat;1f;n;2 raze/ (theta1;theta2)]
+\ts sum each   sum each g:.ml.mcut[n] last .ml.nncost[1f;n;X;ymat;2 raze/ (theta1;theta2)]
 theta:2 raze/ .ml.rweights'[-1_n;1_n];
-.fmincg.fmincg[50;.ml.nncost[X;ymat;0f;n];theta]
-.ml.nncost[X;ymat;0f;n;2 raze/ (theta1;theta2)]
+.fmincg.fmincg[50;.ml.nncost[0f;n;X;ymat];theta]
+.ml.nncost[0f;n;X;ymat;2 raze/ (theta1;theta2)]
 
 theta:2 raze/ .ml.rweights'[-1_n;1_n];
 theta:2 raze/ (theta1;theta2)
-theta:first .fmincg.fmincg[50;.ml.nncost[X;ymat;0;n];theta]
+theta:first .fmincg.fmincg[50;.ml.nncost[0f;n;X;ymat];theta]
 
 100*avg y=1+.ml.predictonevsall[X].ml.mcut[n] theta
 / visualize hidden features
