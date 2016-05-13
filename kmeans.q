@@ -2,7 +2,7 @@
 
 edist:{sum x*x-:y}              / euclidian distance
 mdist:{sum abs x-y}             / manhattan distance (taxicab metric)
-hmean:{1f%avg 1%x}              / harmonic mean
+hmean:{1f%avg 1f%x}             / harmonic mean
 wmin:first iasc@
 
 / using the (d)istance (f)unction, cluster the data (X) into groups
