@@ -2,23 +2,30 @@
 
 edist:{sum x*x-:y}              / euclidian distance
 mdist:{sum abs x-y}             / manhattan distance (taxicab metric)
+hmean:{1f%avg 1%x}              / harmonic mean
+wmin:first iasc@
 
 / using the (d)istance (f)unction, cluster the data (X) into groups
 / defined by the closest (C)entroid
-cgroup:{[df;X;C] group (first iasc@) each flip df[X] each flip C}
+cgroup:{[df;X;C] group wmin each flip df[X] each flip C}
 
 / k-(means|medians) algorithm
 
-/ using a (d)istance (f)ucntion and (m)ean/edian (f)unction, find
-/ (k)-centroids in the data (X) starting with a (C)entroid list
-/ if C is an atom, use it to initialize C with random elements
-k:{[df;mf;X;C]
- if[0h>type C;C:X@\:neg[C]?count X 0];
- C:mf''[X@\:value cgroup[df;X;C]];
+/ stuart lloyd's algorithm. using a (d)istance (f)ucntion and
+/ (m)ean/edian (f)unction, find (k)-centroids in the data (X) starting
+/ with a (C)entroid list. if C is an atom, use it to randomly
+/ initialize C. if negative, use "Forgy" method and randomly pick k
+/ centroids.  if positive, use "Random Partition" method to randomly
+/ assign to k clusters.
+lloyd:{[df;mf;X;C]
+ if[0h>type C;if[0>C;C:X@\:C?count X 0]];
+ g:$[0h>type C;group count[X 0]?C;cgroup[df;X;C]]; / assignment step
+ C:mf''[X@\:value g];                              / update step
  C}
 
-kmeans:k[edist;avg]
-kmedians:k[mdist;med]
+kmeans:lloyd[edist;avg]
+kmedians:lloyd[mdist;med]
+khmeans:lloyd[edist;hmean]
 
 / using the (d)istance (f)unction, cluster the data (X) into groups
 / defined by the closest (C)entroid and return the distance
@@ -36,7 +43,9 @@ z:3 1 4 11 09 10 108 105 103 108
 X:(x;y;z)
 C:()
 
-show flip C:.ml.kmedians[X]/[4]
+.ml.kmeans[X]\[-4]
+.ml.kmedians[X]\[-4]
+.ml.khmeans[X]\[4]
 
 X:(x;y;z)
 (.ml.ecdist[X] .ml.kmeans[X]@) each 1+til count X 0
