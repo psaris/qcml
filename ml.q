@@ -117,6 +117,11 @@ nncostf:{[l;n;X;ymat]
  gf:(last nncost[l;n;X;ymat]@);
  (Jf;gf)}
 
+/ stochastic gradient descent
+/ successively call f with theta and randomly sorted n-sized chunks
+/ minimization (f)unction, (s)ampling (f)unction bi(n)s
+sgd:{[f;sf;n;theta]theta f/ n cut sf count X 0}
+
 /TODO: get more efficient method
 covm:{(1%count x 0)*x$/:\:x}
 /cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}

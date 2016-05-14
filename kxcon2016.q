@@ -1,11 +1,19 @@
-\cd /Users/nick/q/qtips
-\l /Users/nick/q/qtips/qtips.q
 \l /Users/nick/q/ml/mnist/mnist.q
 \l /Users/nick/q/ml/plot.q
 \l /Users/nick/q/ml/kmeans.q
 \l /Users/nick/q/ml/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 \c 40 80
+
+/ box-muller (copied from qtips/stat.q)
+bm:{
+ if[count[x] mod 2;'`length];
+ x:2 0N#x;
+ r:sqrt -2f*log first x;
+ theta:2f*acos[-1f]*last x;
+ x: r*cos theta;
+ x,:r*sin theta;
+ x}
 
 \
 / define a plotting function
@@ -18,11 +26,11 @@ plt sin .01*til 1000
 plt 100000?1f
 
 / normal random variables (k6:10000?-1f)
-plt .stat.bm 10000?1f
+plt bm 10000?1f
 
 / 2 sets of independant normal random variables
 / NOTE: matrix variables are uppercase
-X:(.stat.bm 10000?) each 1 1f
+X:(bm 10000?) each 1 1f
 
 / NOTE: suppress the desire to flip matrices.
 
@@ -143,11 +151,13 @@ plt  X[;rand til count X 0]
 lbls:til 10
 lambda:1
 theta:(1;1+count X)#0f
-mf:(first .fmincg.fmincg[20;;theta 0]@) / pass min func (composition) as parameter
-cgf:.ml.rlogcostgrad[lambda;X] / cost gradient function
+mf:(first .fmincg.fmincg[20;;theta 0]@) / pass minimization func as parameter
+cgf:.ml.rlogcostgrad[lambda;X]          / cost gradient function
+
 / train one set of parameters for each number
-theta:.ml.onevsall[mf;cgf;Y;lbls]
 / NOTE: peach across digits
+theta:.ml.onevsall[mf;cgf;Y;lbls]
+
 100*avg y=p:.ml.predictonevsall[X] enlist theta / what percent did we get correct?
 
 / what did we get wrong?
@@ -161,39 +171,37 @@ plt X[;i:rand w]
 / learn (neural network with 1 hidden layer)
 n:784 30 10;
 ymat:.ml.diag[last[n]#1f]@\:"i"$y
+
+/ need random weights
+
 theta:2 raze/ .ml.rweights'[-1_n;1_n];
 
 / batch gradient descent - steepest gradient (might find local minima)
-first .fmincg.fmincg[1;.ml.nncost[0f;n;X;ymat];theta]
+first .fmincg.fmincg[10;.ml.nncost[0f;n;X;ymat];theta]
 
 / TODO fix `limit error
 /.qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;ymat];theta]
 
 / stochastic gradient descent -
 / - jumpy (can find global minima)
-/ - converges faster
+/ - converges faster (but might never stop)
 / on-line if n = 1
 / mini-batch if n>1 (vectorize calculations)
-/ successively call f with theta and randomly sorted n-sized chunks
-/ minimization (f)unction, (s)ampling (f)unction
-/ bi(n)s
-\
-/ TODO: add learning rate
-sgd:{[f;sf;n;theta]theta f/ n cut sf count X 0}
+
 / n epochs
 f:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];ymat[;y]];x]}
 
 /https://www.quora.com/Whats-the-difference-between-gradient-descent-and-stochastic-gradient-descent
 / A: permutate, run n non-permuted epochs
 i:{neg[x]?x} count X 0;X:X[;i];ymat:ymat[;i];Y:Y[;i];y:Y 0
-theta:1 sgd[f;til;10000]/ theta
+theta:1 .ml.sgd[f;til;10000]/ theta
 / B: run n permuted epochs
-theta:1 sgd[f;{neg[x]?x};10000]/ theta
+theta:1 .ml.sgd[f;{neg[x]?x};10000]/ theta
 / C: run n random (with replacement)
-theta:1 sgd[f;{x?x};10000]/ theta
+theta:1 .ml.sgd[f;{x?x};10000]/ theta
 
 / NOTE: can run any above example with cost threshold
-theta:(1f<first .ml.nncost[0f;n;X;ymat]@) sgd[f;{neg[x]?x};10000]/ theta
+theta:(1f<first .ml.nncost[0f;n;X;ymat]@) .ml.sgd[f;{neg[x]?x};10000]/ theta
 
 / what is the cost?
 first .ml.nncost[0f;n;X;ymat;theta]
@@ -228,7 +236,7 @@ plt:.plot.plot[55;28;1_.plot.c16]
 k:3 / 3 centroids
 
 C:"f"$k?/:2#20 / initial centroids
-X:raze each C,'C + (2;k) #100 cut .stat.bm (100*2*k)?1f
+X:raze each C,'C + (2;k) #100 cut bm (100*2*k)?1f
 plt X
 
 / euler distance last elements starts as atom (specifying the number
