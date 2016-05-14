@@ -69,6 +69,7 @@ rlogcostgradf:{[l;X;y]
  (Jf;gf)}
 logcostgradf:rlogcostgradf[0f]
 
+/ Glorot and Bengio (2010)
 rweights:{neg[e]+x cut (x*y)?2*e:sqrt 6%y+x+:1} / random weights
 
 / (m)inimization (f)unction, (c)ost (g)radient (f)unction
