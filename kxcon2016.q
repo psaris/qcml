@@ -169,12 +169,12 @@ plt X[;i:rand w]
 .ml.checknngradients[.1f;3 5 3]
 
 / learn (neural network with 1 hidden layer)
-n:784 30 10;
+n:784 30 10
 ymat:.ml.diag[last[n]#1f]@\:"i"$y
 
 / need random weights
 
-theta:2 raze/ .ml.rweights'[-1_n;1_n];
+theta:2 raze/ .ml.ninit'[-1_n;1_n];
 
 / batch gradient descent - steepest gradient (might find local minima)
 first .fmincg.fmincg[10;.ml.nncost[0f;n;X;ymat];theta]
@@ -188,20 +188,21 @@ first .fmincg.fmincg[10;.ml.nncost[0f;n;X;ymat];theta]
 / on-line if n = 1
 / mini-batch if n>1 (vectorize calculations)
 
-/ n epochs
-f:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];ymat[;y]];x]}
+mf:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];ymat[;y]];x]}
 
 /https://www.quora.com/Whats-the-difference-between-gradient-descent-and-stochastic-gradient-descent
 / A: permutate, run n non-permuted epochs
 i:{neg[x]?x} count X 0;X:X[;i];ymat:ymat[;i];Y:Y[;i];y:Y 0
-theta:1 .ml.sgd[f;til;10000]/ theta
+theta:1 .ml.sgd[mf;til;10000;X]/ theta
 / B: run n permuted epochs
-theta:1 .ml.sgd[f;{neg[x]?x};10000]/ theta
+theta:1 .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
 / C: run n random (with replacement)
-theta:1 .ml.sgd[f;{x?x};10000]/ theta
+theta:1 .ml.sgd[mf;{x?x};10000;X]/ theta
 
 / NOTE: can run any above example with cost threshold
-theta:(1f<first .ml.nncost[0f;n;X;ymat]@) .ml.sgd[f;{neg[x]?x};10000]/ theta
+theta:(1f<first .ml.nncost[0f;n;X;ymat]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
+
+/ TIP: 3.4t {neg[x]?x} == 0N?x
 
 / what is the cost?
 first .ml.nncost[0f;n;X;ymat;theta]
@@ -210,7 +211,7 @@ first .ml.nncost[0f;n;X;ymat;theta]
 100*avg y=p:.ml.predictonevsall[X].ml.mcut[n] theta
 
 / visualize hidden features
-plt 1_first first .ml.mcut[n] theta
+plt 1_ first first .ml.mcut[n] theta
 
 / view a few mistakes
 p w:where not y=p

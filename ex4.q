@@ -22,11 +22,11 @@ ymat:.ml.diag[10#1f]@\:"i"$y-1
 n:400 25 10;
 ymat:.ml.diag[last[n]#1f]@\:"i"$y-1
 \ts sum each   sum each g:.ml.mcut[n] last .ml.nncost[1f;n;X;ymat;2 raze/ (theta1;theta2)]
-theta:2 raze/ .ml.rweights'[-1_n;1_n];
+theta:2 raze/ .ml.ninit'[-1_n;1_n];
 .fmincg.fmincg[50;.ml.nncost[0f;n;X;ymat];theta]
 .ml.nncost[0f;n;X;ymat;2 raze/ (theta1;theta2)]
 
-theta:2 raze/ .ml.rweights'[-1_n;1_n];
+theta:2 raze/ .ml.ninit'[-1_n;1_n];
 theta:2 raze/ (theta1;theta2)
 theta:first .fmincg.fmincg[50;.ml.nncost[0f;n;X;ymat];theta]
 
