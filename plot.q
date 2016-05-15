@@ -1,5 +1,5 @@
 \d .plot
-nbin:{(til[y]%y) bin x%max x-:min x} / allocate x into y bins
+nbin:{(til[y]%y) bin 0f^x%max x-:min x} / allocate x into y bins
 nrng:{[n;s;e]s+til[1+n]*(e-s)%n}  / divide range (s;e) into n buckets
 / cut mxn matrix into (x;y;z) for use by plot
 hmap:{(flip (til count x) cross reverse til count first x),enlist raze x}
