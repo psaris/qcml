@@ -208,7 +208,7 @@ theta:(1f<first .ml.nncost[0f;n;X;ymat]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
 first .ml.nncost[0f;n;X;ymat;theta]
 
 / how well did we learn
-100*avg y=p:.ml.predictonevsall[X].ml.mcut[n] theta
+100*avg y=p:.ml.predictonevsall[X] .ml.mcut[n] theta
 
 / visualize hidden features
 plt 1_ first first .ml.mcut[n] theta
@@ -223,7 +223,7 @@ Yt:enlist yt:"i"$ldidx read1 `$"t10k-labels-idx1-ubyte"
 Xt:flip "f"$raze each ldidx read1 `$"t10k-images-idx3-ubyte"
 
 / how well can we predict
-100*avg yt=p:.ml.predictonevsall[Xt].ml.mcut[n] theta
+100*avg yt=p:.ml.predictonevsall[Xt] .ml.mcut[n] theta
 
 / view a few mistakes
 p w:where not yt=p
@@ -236,8 +236,8 @@ plt Xt[;rw:rand w]
 plt:.plot.plot[55;28;1_.plot.c16]
 k:3 / 3 centroids
 
-C:"f"$k?/:2#20 / initial centroids
-X:raze each C,'C + (2;k) #100 cut bm (100*2*k)?1f
+show C:"f"$k?/:2#20 / initial centroids
+X:raze each C,''C+bm(2;k)#100?/:(2*k)#1f
 plt X
 
 / euler distance last elements starts as atom (specifying the number
