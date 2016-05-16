@@ -75,11 +75,11 @@ ninit:{sqrt[6f%x+y]*-1f+(x+:1)?/:y#2f}
 / (m)inimization (f)unction, (c)ost (g)radient (f)unction
 onevsall:{[mf;cgf;y;lbls] (mf cgf "f"$y=) peach lbls}
 
-wmax:first idesc@               / where max?
-wmin:first iasc@                / where min?
+imax:{x?max x}                  / index of max element
+imin:{x?min x}                  / index of min element
 
 / predict each number and pick best
-predictonevsall:{[X;theta]wmax each flip X lpredict/ theta}
+predictonevsall:{[X;theta]imax each flip X lpredict/ theta}
 
 / cut a vector into n matrices
 mcut:{[n;x](1+-1_n) cut' (sums {x*y+1} prior -1_n) cut x}
@@ -133,7 +133,7 @@ hmean:{1f%avg 1f%x}             / harmonic mean
 
 / using the (d)istance (f)unction, cluster the data (X) into groups
 / defined by the closest (C)entroid
-cgroup:{[df;X;C] group wmin each flip df[X] each flip C}
+cgroup:{[df;X;C] group imin each flip df[X] each flip C}
 
 / k-(means|medians) algorithm
 
