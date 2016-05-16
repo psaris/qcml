@@ -237,17 +237,15 @@ plt:.plot.plot[55;28;1_.plot.c16]
 k:3 / 3 centroids
 
 show C:"f"$k?/:2#20 / initial centroids
-X:raze each C,''C+bm(2;k)#100?/:(2*k)#1f
+X:raze each C,''C*1f+.1*bm(2;k)#100?/:(2*k)#1f
 plt X
 
-/ euler distance last elements starts as atom (specifying the number
-/ of centroids) but becomes the actual centroids after the initial
-/ iteration.
-.ml.kmeans[X]\[k]
+/ the number of centroids (k) becomes the actual centroids after the
+/ initial iteration.
+.ml.kmeans[X]\[k]               / euclidian distance
 
-/ manhattan distance (taxicab metric)
 / NOTE: picks x and y from data (but not necessarily (x;y))
-.ml.kmedians[X]\[k]
+.ml.kmedians[X]\[k]             / manhattan distance (taxicab metric)
 
 / get http data from (h)ost with (l)ocaction
 hget:{[h;l] (`$":http://",h)"GET ",l," HTTP/1.1\r\nHost:",h,"\r\n\r\n"}
@@ -257,9 +255,16 @@ s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
 iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",") 0: -1_last "\r\n" vs s
 X:value flip 4#/:iris
 plt X 3
-flip .ml.kmeans[X]/[3]
 
-.ml.ecdist[X] .ml.kmeans[X]/[3]
+/ classify
+flip  C:.ml.kmeans[X]/[-3]
+
+species:`$("Iris-setosa";"Iris-versicolor";"Iris-virginica")
+g:.ml.cgroup[.ml.edist;X;C]
+100*avg iris[`species]=species .ml.ugrp g
+
+/ plot errors with increasing number of centroids
+plt (.ml.distortion .ml.ecdist[X] .ml.kmeans[X]@) each neg 1+til 10
 
 / TODO: kmeans to compress RGB, PCA for reduce dimensions
 
