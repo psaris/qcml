@@ -1,10 +1,8 @@
 \d .ml
 
-/ add intercept
-addint:{((1;count x 0)#1f),x}
+addint:{((1;count x 0)#1f),x}   / add intercept
 
-/ regression predict
-predict:{[X;theta]theta$addint X}
+predict:{[X;theta]theta$addint X} / regression predict
 
 / regularized linear regression cost
 rlincost:{[l;X;y;theta]
@@ -20,20 +18,16 @@ rlingrad:{[l;X;y;theta]
  g}
 lingrad:rlingrad[0f]
 
-/ gradient descent (gf: gradient function)
-gd:{[alpha;gf;theta] theta-alpha*gf theta}
+/ gf: gradient function
+gd:{[alpha;gf;theta] theta-alpha*gf theta} / gradient descent
 
-/ normal equations
-mlsq:{flip inv[y$/:y]$x$/:y}
+mlsq:{flip inv[y$/:y]$x$/:y}    / normal equations
 
-/ feature normalization
-zscore:{(x-avg x)%dev x}
+zscore:{(x-avg x)%dev x}        / feature normalization
 
-/ sigmoid function
-sigmoid:{1f%1f+exp neg x}
+sigmoid:{1f%1f+exp neg x}       / sigmoid function
 
-/ logistic regression predict
-lpredict:(')[sigmoid;predict]
+lpredict:(')[sigmoid;predict]   / logistic regression predict
 
 / logistic regression cost
 lcost:{sum (-1f%count y 0)*sum each (y*log x)+(1f-y)*log 1f-x}
@@ -163,16 +157,3 @@ distortion:sum sum each
 
 / ungroup (inverse of group)
 ugrp:{(key[x] where count each value x)iasc raze x}
-
-/ pca
-
-/TODO: get more efficient method
-covm:{(1%count x 0)*x$/:\:x}
-/cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}
-
-pca:{[k;X]
- Xn:zscore each X;
- v:last .qml.mev covm Xn;
- Z:(k#v)$Xn; / project onto k dimensions
- Xr:flip[k#v]$Z; /reconstruct initial image
- (v;Z;Xr)}

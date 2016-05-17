@@ -60,7 +60,19 @@ plt X[;i:rand 5000]
 plt X[;i]
 (,') over plt each flip X[;-4?5000]
 
-r:`v`Z`Xr!.ml.pca[100] X
+/TODO: get more efficient method
+covm:{(1%count x 0)*x$/:\:x}
+/cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}
+
+pca:{[k;X]
+ Xn:zscore each X;
+ v:last .qml.mev covm Xn;
+ Z:(k#v)$Xn; / project onto k dimensions
+ Xr:flip[k#v]$Z; /reconstruct initial image
+ (v;Z;Xr)}
+
+
+r:`v`Z`Xr!pca[100] X
 / pca faces
 (,') over plt each 2# r[`v]
 / recover initial faces

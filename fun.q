@@ -17,7 +17,7 @@ bm:{
 
 \
 / define a plotting function
-plt:.plot.plot[49;25;1_.plot.c16]
+plt:.plot.plot[28;15;1_.plot.c16]
 
 / plot sin x
 plt sin .01*til 1000
@@ -32,7 +32,7 @@ plt bm 10000?1f
 / NOTE: matrix variables are uppercase
 X:(bm 10000?) each 1 1f
 
-/ NOTE: suppress the desire to flip matrices.
+/ TIP: suppress the desire to flip matrices.
 
 / Matlab/Octave/R all store data in columns
 
@@ -53,6 +53,9 @@ X[0]:(rho;sqrt 1-rho*rho)$X
 plt X
 
 / NOTE: use +$+ for both dot product and matrix multiplication
+
+/ add intercept
+.ml.addint X
 
 / fit a line with intercept
 Y:-1#X
@@ -79,6 +82,8 @@ plt X,.ml.predict[X] theta
 / gradient descent
 alpha:.1
 theta:1 2#0f
+.ml.gd[alpha;.ml.lingrad[X;Y]] theta
+
 / n steps
 2 .ml.gd[alpha;.ml.lingrad[X;Y]]/ theta
 / until cost within tolerance
@@ -144,8 +149,8 @@ X:flip "f"$raze each ldidx read1 `$"train-images-idx3-ubyte"
 
 / visualize data
 / redefine plot (to include space)
-plt:.plot.plot[55;28;.plot.c16] .plot.hmap flip 28 cut
-plt  X[;rand til count X 0]
+plt:.plot.plot[28;15;.plot.c16] .plot.hmap flip 28 cut
+plt  X[;rand count X 0]
 
 / learn (one vs all)
 lbls:til 10
@@ -233,7 +238,7 @@ plt Xt[;rw:rand w]
 / k-means
 
 / redefine plot (to drop space)
-plt:.plot.plot[55;28;1_.plot.c16]
+plt:.plot.plot[28;15;1_.plot.c16]
 k:3 / 3 centroids
 
 show C:"f"$k?/:2#20 / initial centroids
