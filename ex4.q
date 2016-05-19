@@ -19,7 +19,7 @@ ymat:.ml.diag[10#1f]@\:"i"$y-1
 0.026047433852894011 = sum 2 raze/ .ml.rloggrad[0f;X;ymat] (theta1;theta2)
 0.0099559365856808548 = sum 2 raze/ .ml.rloggrad[1f;X;ymat] (theta1;theta2)
 
-n:400 25 10;
+n:400 25 10
 ymat:.ml.diag[last[n]#1f]@\:"i"$y-1
 \ts sum each   sum each g:.ml.mcut[n] last .ml.nncost[1f;n;X;ymat;2 raze/ (theta1;theta2)]
 theta:2 raze/ .ml.ninit'[-1_n;1_n];
