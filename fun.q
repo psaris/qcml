@@ -15,6 +15,8 @@ bm:{
  x,:r*sin theta;
  x}
 
+\cd /Users/nick/q/ml
+
 \
 / define a plotting function
 plt:.plot.plot[28;15;1_.plot.c16]
@@ -141,15 +143,13 @@ theta:first .fmincg.fmincg[100;.ml.logcostgrad[X;Y];theta 0]
 / digit recognition
 / multiple runs of logistic regression (one for each digit)
 
-\cd /Users/nick/q/ml/mnist
-
 / load training data
 Y:enlist y:"i"$ldidx read1 `$"train-labels-idx1-ubyte"
 X:flip "f"$raze each ldidx read1 `$"train-images-idx3-ubyte"
 
 / visualize data
 / redefine plot (to include space)
-plt:.plot.plot[28;15;.plot.c16] .plot.hmap flip 28 cut
+plt:.plot.plot[28;15;.plot.c10] .plot.hmap flip 28 cut
 plt  X[;rand count X 0]
 
 / learn (one vs all)
@@ -187,7 +187,7 @@ first .fmincg.fmincg[10;.ml.nncost[0f;n;X;ymat];theta]
 / TODO fix `limit error
 /.qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;ymat];theta]
 
-/ stochastic gradient descent -
+/ stochastic gradient descent
 / - jumpy (can find global minima)
 / - converges faster (but might never stop)
 / on-line if n = 1
@@ -201,22 +201,22 @@ i:{neg[x]?x} count X 0;X:X[;i];ymat:ymat[;i];Y:Y[;i];y:Y 0
 theta:1 .ml.sgd[mf;til;10000;X]/ theta
 / B: run n permuted epochs
 theta:1 .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
-/ C: run n random (with replacement)
+/ C: run n random (with replacement) epochs (aka bootstrap)
 theta:1 .ml.sgd[mf;{x?x};10000;X]/ theta
 
 / NOTE: can run any above example with cost threshold
 theta:(1f<first .ml.nncost[0f;n;X;ymat]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
 
-/ TIP: 3.4t {neg[x]?x} == 0N?x
+/ TIP: 3.4 {neg[x]?x} == 0N?x
 
-/ what is the cost?
+/ what is the total cost?
 first .ml.nncost[0f;n;X;ymat;theta]
 
 / how well did we learn
 100*avg y=p:.ml.predictonevsall[X] .ml.mcut[n] theta
 
 / visualize hidden features
-plt 1_ first first .ml.mcut[n] theta
+plt 1_ last first .ml.mcut[n] theta
 
 / view a few mistakes
 p w:where not y=p
@@ -235,14 +235,20 @@ p w:where not yt=p
 plt Xt[;rw:rand w]
 ([]p;yt) rw
 
-/ k-means
+/ which digits are difficult to learn
+desc count each group yt w
+
+/ which digits are often mistaken for each other
+desc count each group ([]p;yt) w
+
+/ clustering
 
 / redefine plot (to drop space)
-plt:.plot.plot[28;15;1_.plot.c16]
+plt:.plot.plot[28;15;1_.plot.c10]
 k:3 / 3 centroids
 
 show C:"f"$k?/:2#20 / initial centroids
-X:raze each C,''C*1f+.1*bm(2;k)#100?/:(2*k)#1f
+X:raze each C,''C+bm(2;k)#100?/:(2*k)#1f
 plt X
 
 / the number of centroids (k) becomes the actual centroids after the
@@ -252,21 +258,20 @@ plt X
 / NOTE: picks x and y from data (but not necessarily (x;y))
 .ml.kmedians[X]\[k]             / manhattan distance (taxicab metric)
 
-/ get http data from (h)ost with (l)ocaction
-hget:{[h;l] (`$":http://",h)"GET ",l," HTTP/1.1\r\nHost:",h,"\r\n\r\n"}
-
+/ TIP: 3.4 introduced .Q.hg
 / classic machine learning iris data
-s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
-iris:flip `slength`swidth`plength`pwidth`species!("FFFFS";",") 0: -1_last "\r\n" vs s
+/s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
+iris:("FFFFS";1#",") 0: `iris.txt
 X:value flip 4#/:iris
 plt X 3
 
-/ classify
+/ find 3 centroids
 flip  C:.ml.kmeans[X]/[-3]
 
-species:`$("Iris-setosa";"Iris-versicolor";"Iris-virginica")
-g:.ml.cgroup[.ml.edist;X;C]
-100*avg iris[`species]=species .ml.ugrp g
+/ classify
+show g:.ml.cgroup[.ml.edist;X;C]
+
+100*avg iris.species=distinct[iris.species] .ml.ugrp g
 
 / plot errors with increasing number of centroids
 plt (.ml.distortion .ml.ecdist[X] .ml.kmeans[X]@) each neg 1+til 10
