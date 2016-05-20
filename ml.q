@@ -84,18 +84,18 @@ diag:{$[0h>t:type x;x;@[n#abs[t]$0;;:;]'[til n:count x;x]]}
 numgrad:{[f;x;e](.5%e)*{x[y+z]-x[y-z]}[f;x] peach diag e}
 
 checknngradients:{[l;n]
- THETA:2 raze/ ninit'[-1_n;1_n];
+ theta:2 raze/ THETA:ninit'[-1_n;1_n];
  X:flip ninit[-1+n 0;n 1];
  y:1+(1+til n 1) mod last n;
  YMAT:flip diag[last[n]#1f]"i"$y-1;
- g:2 raze/ rloggrad[l;X;YMAT] mcut[n] THETA; / analytic gradient
+ g:2 raze/ rloggrad[l;X;YMAT] THETA; / analytic gradient
  f:(rlogcost[l;X;YMAT]mcut[n]@);
- ng:numgrad[f;THETA] count[THETA]#1e-4; / numerical gradient
+ ng:numgrad[f;theta] count[theta]#1e-4; / numerical gradient
  (g;ng)}
 
 / n can be any network topology dimension
-nncost:{[l;n;X;YMAT;THETA] / combined cost and gradient for efficiency
- THETA:mcut[n] THETA;
+nncost:{[l;n;X;YMAT;theta] / combined cost and gradient for efficiency
+ THETA:mcut[n] theta;
  X1:last a:lpredict\[enlist[X],THETA];
  n:count YMAT 0;
  J:lcost[X1;YMAT];
