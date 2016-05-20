@@ -1,5 +1,3 @@
-\cd /Users/nick/q/ml
-
 \l ml.q
 \l mnist.q
 \l plot.q
@@ -34,7 +32,7 @@ plt bm 10000?1f
 / NOTE: matrix variables are uppercase
 X:(bm 10000?) each 1 1f
 
-/ TIP: suppress the desire to flip matrices.
+/ TIP: suppress the desire to flip matrices
 
 / Matlab/Octave/R all store data in columns
 
@@ -46,8 +44,6 @@ flip X
 plt X
 
 / correlate x and y
-/ TODO: implement copula?
-/ http://www.sitmo.com/article/generating-correlated-random-numbers/
 rho:.8
 X[0]:(rho;sqrt 1f-rho*rho)$X
 
@@ -252,15 +248,13 @@ X:raze each C,''C+bm(2;k)#100?/:(2*k)#1f
 plt X
 
 / the number of centroids (k) becomes the actual centroids after the
-/ initial iteration.
+/ initial iteration
 .ml.kmeans[X]\[k]               / euclidian distance
 
 / NOTE: picks x and y from data (but not necessarily (x;y))
 .ml.kmedians[X]\[k]             / manhattan distance (taxicab metric)
 
-/ TIP: 3.4 introduced .Q.hg
 / classic machine learning iris data
-/s:hget["scipy-cookbook.readthedocs.io";"/_downloads/bezdekIris.data.txt"]
 iris:("FFFFS";1#",") 0: `iris.txt
 X:value flip 4#/:iris
 plt X 3
@@ -271,10 +265,9 @@ flip  C:.ml.kmeans[X]/[-3]
 / classify
 show g:.ml.cgroup[.ml.edist;X;C]
 
+/ how well can we predict
 100*avg iris.species=distinct[iris.species] .ml.ugrp g
 
 / plot errors with increasing number of centroids
 plt (.ml.distortion .ml.ecdist[X] .ml.kmeans[X]@) each neg 1+til 10
-
-/ TODO: kmeans to compress RGB, PCA for reduce dimensions
 
