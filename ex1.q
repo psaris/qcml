@@ -8,28 +8,28 @@
 data:("FF";",")0:`:ex1data1.txt
 .plot.plt data
 X:1#data
-y:-1#data
-theta:(1;1+count X)#0f          / initial guess
+Y:-1#data
+THETA:(1;1+count X)#0f          / initial guess
 alpha:.001                      / learning rate
-32.072733877455654 ~ .ml.lincost[X;y;theta]   / least squares cost
+32.072733877455654 ~ .ml.lincost[X;Y;THETA]   / least squares cost
 / plot cost function of each gd step
-.plot.plt .ml.lincost[X;y] each 20 .ml.gd[alpha;.ml.lingrad[X;y]]\theta
-.ml.gd[alpha;.ml.lingrad[X;y]]/[theta] / obtain optimal theta
+.plot.plt .ml.lincost[X;Y] each 20 .ml.gd[alpha;.ml.lingrad[X;Y]]\THETA
+.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA] / obtain optimal theta
 / plot prediction of optimal theta
-.plot.plt X,.ml.gd[alpha;.ml.lingrad[X;y]]/[theta]$.ml.addint X
-flip .qml.mlsq[flip .ml.addint X;flip y] / qml least squares
-flip .ml.mlsq[.ml.addint X;y]           / normal equations
-y lsq .ml.addint X                       / q least squares
+.plot.plt X,.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA]$.ml.addint X
+flip .qml.mlsq[flip .ml.addint X;flip Y] / qml least squares
+flip .ml.mlsq[.ml.addint X;Y]           / normal equations
+Y lsq .ml.addint X                       / q least squares
 
 data:("FFF";",")0:`ex1data2.txt
 .plot.plt 2#data
 X:data 0 1
 X:.ml.zscore each X             / normalize and
-y:-1#data
+Y:-1#data
 alpha:.01
-theta:enlist (1+count X)#0f
-4000 .ml.gd[alpha;X;y]/ theta
+THETA:(1;1+count X)#0f
+4000 .ml.gd[alpha;.ml.lingrad[X;Y]]/ THETA
 
-flip .qml.mlsq[flip .ml.addint X;flip y] / qml least squares
-flip .ml.mlsq[y;.ml.addint X]            / normal equations
-y lsq .ml.addint X                       / q least squares
+flip .qml.mlsq[flip .ml.addint X;flip Y] / qml least squares
+flip .ml.mlsq[Y;.ml.addint X]            / normal equations
+Y lsq .ml.addint X                       / q least squares

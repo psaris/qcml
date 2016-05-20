@@ -2,24 +2,24 @@
 
 addint:{((1;count x 0)#1f),x}   / add intercept
 
-predict:{[X;theta]theta$addint X} / regression predict
+predict:{[X;THETA]THETA$addint X} / regression predict
 
 / regularized linear regression cost
-rlincost:{[l;X;y;theta]
- J:sum (1f%2*n:count y 0)*sum y$/:y-:predict[X;theta];
- if[l>0f;J+:(l%2*n)*x$x:raze @[;0;:;0f]'[theta]];
+rlincost:{[l;X;Y;THETA]
+ J:sum (1f%2*n:count Y 0)*sum Y$/:Y-:predict[X;THETA];
+ if[l>0f;J+:(l%2*n)*x$x:raze @[;0;:;0f]'[THETA]];
  J}
 lincost:rlincost[0f]
 
 / regularized linear regression gradient
-rlingrad:{[l;X;y;theta]
- g:(1f%n:count y 0)*addint[X]$/:predict[X;theta]-y;
- if[l>0f;g+:(l%n)*@[;0;:;0f]'[theta]];
+rlingrad:{[l;X;Y;THETA]
+ g:(1f%n:count Y 0)*addint[X]$/:predict[X;THETA]-Y;
+ if[l>0f;g+:(l%n)*@[;0;:;0f]'[THETA]];
  g}
 lingrad:rlingrad[0f]
 
 / gf: gradient function
-gd:{[alpha;gf;theta] theta-alpha*gf theta} / gradient descent
+gd:{[alpha;gf;THETA] THETA-alpha*gf THETA} / gradient descent
 
 mlsq:{flip inv[y$/:y]$x$/:y}    / normal equations
 
@@ -33,33 +33,33 @@ lpredict:(')[sigmoid;predict]   / logistic regression predict
 lcost:{sum (-1f%count y 0)*sum each (y*log x)+(1f-y)*log 1f-x}
 
 / regularized logistic regression cost
-rlogcost:{[l;X;y;theta]
- J:lcost[X lpredict/ theta;y];
- if[l>0f;J+:(l%2*count y 0)*x$x:2 raze/ @[;0;:;0f]''[theta]]; / regularization
+rlogcost:{[l;X;Y;THETA]
+ J:lcost[X lpredict/ THETA;Y];
+ if[l>0f;J+:(l%2*count Y 0)*x$x:2 raze/ @[;0;:;0f]''[THETA]]; / regularization
  J}
 logcost:rlogcost[0f]
 
 / regularized logistic regression gradient
-rloggrad:{[l;X;y;theta]
- n:count y 0;
- a:lpredict\[enlist[X],theta];
- d:last[a]-y;
+rloggrad:{[l;X;Y;THETA]
+ n:count Y 0;
+ a:lpredict\[enlist[X],THETA];
+ D:last[a]-Y;
  a:addint each -1_a;
- d:{[d;theta;a]1_(flip[theta]$d)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
- g:(a($/:)'d)%n;
- if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]]; / regularization
+ D:{[D;THETA;a]1_(flip[THETA]$D)*a*1f-a}\[D;reverse 1_THETA;reverse 1_a],enlist D;
+ g:(a($/:)'D)%n;
+ if[l>0f;g+:(l%n)*@[;0;:;0f]''[THETA]]; / regularization
  g}
 loggrad:rloggrad[0f]
 
-rlogcostgrad:{[l;X;y;theta]
- J:sum rlogcost[l;X;y;2 enlist/ theta];
- g:2 raze/ rloggrad[l;X;y;2 enlist/ theta];
+rlogcostgrad:{[l;X;Y;THETA]
+ J:sum rlogcost[l;X;Y;2 enlist/ THETA];
+ g:2 raze/ rloggrad[l;X;Y;2 enlist/ THETA];
  (J;g)}
 logcostgrad:rlogcostgrad[0f]
 
-rlogcostgradf:{[l;X;y]
- Jf:(sum rlogcost[l;X;y]enlist enlist@);
- gf:(raze rloggrad[l;X;y]enlist enlist @);
+rlogcostgradf:{[l;X;Y]
+ Jf:(sum rlogcost[l;X;Y]enlist enlist@);
+ gf:(raze rloggrad[l;X;Y]enlist enlist @);
  (Jf;gf)}
 logcostgradf:rlogcostgradf[0f]
 
@@ -67,13 +67,13 @@ logcostgradf:rlogcostgradf[0f]
 ninit:{sqrt[6f%x+y]*-1f+(x+:1)?/:y#2f}
 
 / (m)inimization (f)unction, (c)ost (g)radient (f)unction
-onevsall:{[mf;cgf;y;lbls] (mf cgf "f"$y=) peach lbls}
+onevsall:{[mf;cgf;Y;lbls] (mf cgf "f"$Y=) peach lbls}
 
 imax:{x?max x}                  / index of max element
 imin:{x?min x}                  / index of min element
 
 / predict each number and pick best
-predictonevsall:{[X;theta]imax each flip X lpredict/ theta}
+predictonevsall:{[X;THETA]imax each flip X lpredict/ THETA}
 
 / cut a vector into n matrices
 mcut:{[n;x](1+-1_n) cut' (sums {x*y+1} prior -1_n) cut x}
@@ -84,39 +84,39 @@ diag:{$[0h>t:type x;x;@[n#abs[t]$0;;:;]'[til n:count x;x]]}
 numgrad:{[f;x;e](.5%e)*{x[y+z]-x[y-z]}[f;x] peach diag e}
 
 checknngradients:{[l;n]
- theta:2 raze/ ninit'[-1_n;1_n];
+ THETA:2 raze/ ninit'[-1_n;1_n];
  X:flip ninit[-1+n 0;n 1];
  y:1+(1+til n 1) mod last n;
- ymat:flip diag[last[n]#1f]"i"$y-1;
- g:2 raze/ rloggrad[l;X;ymat] mcut[n] theta; / analytic gradient
- f:(rlogcost[l;X;ymat]mcut[n]@);
- ng:numgrad[f;theta] count[theta]#1e-4; / numerical gradient
+ YMAT:flip diag[last[n]#1f]"i"$y-1;
+ g:2 raze/ rloggrad[l;X;YMAT] mcut[n] THETA; / analytic gradient
+ f:(rlogcost[l;X;YMAT]mcut[n]@);
+ ng:numgrad[f;THETA] count[THETA]#1e-4; / numerical gradient
  (g;ng)}
 
 / n can be any network topology dimension
-nncost:{[l;n;X;ymat;theta] / combined cost and gradient for efficiency
- theta:mcut[n] theta;
- x:last a:lpredict\[enlist[X],theta];
- n:count ymat 0;
- J:lcost[x;ymat];
- if[l>0f;J+:(l%2*n)*{x$x}2 raze/ @[;0;:;0f]''[theta]]; / regularization
- d:x-ymat;
+nncost:{[l;n;X;YMAT;THETA] / combined cost and gradient for efficiency
+ THETA:mcut[n] THETA;
+ X1:last a:lpredict\[enlist[X],THETA];
+ n:count YMAT 0;
+ J:lcost[X1;YMAT];
+ if[l>0f;J+:(l%2*n)*{x$x}2 raze/ @[;0;:;0f]''[THETA]]; / regularization
+ D:X1-YMAT;
  a:addint each -1_a;
- d:{[d;theta;a]1_(flip[theta]$d)*a*1f-a}\[d;reverse 1_theta;reverse 1_a],enlist d;
- g:(a($/:)'d)%n;
- if[l>0f;g+:(l%n)*@[;0;:;0f]''[theta]]; / regularization
+ D:{[D;THETA;a]1_(flip[THETA]$D)*a*1f-a}\[D;reverse 1_THETA;reverse 1_a],enlist D;
+ g:(a($/:)'D)%n;
+ if[l>0f;g+:(l%n)*@[;0;:;0f]''[THETA]]; / regularization
  (J;2 raze/ g)}
 
-nncostf:{[l;n;X;ymat]
- Jf:(first nncost[l;n;X;ymat]@);
- gf:(last nncost[l;n;X;ymat]@);
+nncostf:{[l;n;X;YMAT]
+ Jf:(first nncost[l;n;X;YMAT]@);
+ gf:(last nncost[l;n;X;YMAT]@);
  (Jf;gf)}
 
 / stochastic gradient descent
 
-/ successively call (m)inimization (f)unction with (theta) and
+/ successively call (m)inimization (f)unction with (THETA) and
 / randomly sorted (n)-sized chunks generated by (s)ampling (f)unction
-sgd:{[mf;sf;n;X;theta]theta mf/ n cut sf count X 0}
+sgd:{[mf;sf;n;X;THETA]THETA mf/ n cut sf count X 0}
 
 / k-means
 

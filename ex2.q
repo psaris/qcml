@@ -9,21 +9,21 @@
 data:("FFF";",")0:`:ex2data1.txt
 .plot.plt data
 X:2#data
-y:-1#data
-theta:(1;1+count X)#0f
-.ml.logcost[X;y;enlist theta]        / logistic regression cost
-.ml.loggrad[X;y;enlist theta]        / logistic regression gradient
+Y:-1#data
+THETA:(1;1+count X)#0f
+.ml.logcost[X;Y;enlist THETA]        / logistic regression cost
+.ml.loggrad[X;Y;enlist THETA]        / logistic regression gradient
 
 / rk:runge–kutta, slp: success linear programming
 opts:`quiet`rk`iter,7000
 / find function minimum
-theta:(1;1+count X)#0f
-.qml.minx[opts;.ml.logcost[X;y]enlist enlist@;theta]
+THETA:(1;1+count X)#0f
+.qml.minx[opts;.ml.logcost[X;Y]enlist enlist@;THETA]
 / use gradient to improve efficiency
-.qml.minx[opts;.ml.logcostgradf[X;y];theta]
+.qml.minx[opts;.ml.logcostgradf[X;Y];THETA]
 
 / compare plots
-theta:first .qml.minx[opts;.ml.logcost[X;y]enlist enlist@;theta]
+THETA:.qml.minx[opts;.ml.logcost[X;Y]enlist enlist@;THETA]
 .plot.plt data
-.plot.plt X,.ml.lpredict[X] theta
+.plot.plt X,.ml.lpredict[X] THETA
 

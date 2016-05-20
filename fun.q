@@ -1,9 +1,11 @@
-\l /Users/nick/q/ml/mnist/mnist.q
-\l /Users/nick/q/ml/plot.q
-\l /Users/nick/q/ml/kmeans.q
-\l /Users/nick/q/ml/fmincg.q
-\l /Users/nick/q/qml/src/qml.q
-\c 40 80
+\cd /Users/nick/q/ml
+
+\l ml.q
+\l mnist.q
+\l plot.q
+\l fmincg.q
+/\l qml.q
+\c 20 80
 
 / box-muller (copied from qtips/stat.q)
 bm:{
@@ -14,8 +16,6 @@ bm:{
  x: r*cos theta;
  x,:r*sin theta;
  x}
-
-\cd /Users/nick/q/ml
 
 \
 / define a plotting function
@@ -49,7 +49,7 @@ plt X
 / TODO: implement copula?
 / http://www.sitmo.com/article/generating-correlated-random-numbers/
 rho:.8
-X[0]:(rho;sqrt 1-rho*rho)$X
+X[0]:(rho;sqrt 1f-rho*rho)$X
 
 / plot correlated x,y
 plt X
@@ -62,10 +62,10 @@ plt X
 / fit a line with intercept
 Y:-1#X
 X:1#X
-show theta:Y lsq .ml.addint X
+show THETA:Y lsq .ml.addint X
 
 / plot fitted line
-plt X,.ml.predict[X] theta
+plt X,.ml.predict[X] THETA
 
 / fast but not numerically stable
 .ml.mlsq
@@ -77,21 +77,21 @@ plt X,.ml.predict[X] theta
 
 / qml uses QR decomposition for a more numerically stable fit, but it
 / makes us flip both X and Y
-\ts flip .qml.mlsq[flip .ml.addint X;flip Y]
+/\ts flip .qml.mlsq[flip .ml.addint X;flip Y]
 
 / nice to have closed form solution, but what if we don't?
 
 / gradient descent
 alpha:.1
-theta:1 2#0f
-.ml.gd[alpha;.ml.lingrad[X;Y]] theta
+THETA:1 2#0f
+.ml.gd[alpha;.ml.lingrad[X;Y]] THETA
 
 / n steps
-2 .ml.gd[alpha;.ml.lingrad[X;Y]]/ theta
+2 .ml.gd[alpha;.ml.lingrad[X;Y]]/ THETA
 / until cost within tolerance
-(.4>.ml.lincost[X;Y]@) .ml.gd[alpha;.ml.lingrad[X;Y]]/ theta
+(.4<.ml.lincost[X;Y]@) .ml.gd[alpha;.ml.lingrad[X;Y]]/ THETA
 / until convergence
-.ml.gd[alpha;.ml.lingrad[X;Y]] over theta
+.ml.gd[alpha;.ml.lingrad[X;Y]] over THETA
 
 / how to represent a binary outcome?
 / use sigmoid function
@@ -105,17 +105,17 @@ plt X,Y
 
 / logistic regression cost
 / NOTE: accepts a list of thetas (in preparation for nn)
-theta: (1;3)#0f;
-.ml.logcost[X;Y;enlist theta]
+THETA: (1;3)#0f;
+.ml.logcost[X;Y;enlist THETA]
 
 / logistic regression gradient
-.ml.loggrad[X;Y;enlist theta]
+.ml.loggrad[X;Y;enlist THETA]
 / iterate 100000 times
-100000 .ml.gd[.0005;.ml.loggrad[X;Y]]/ enlist theta
+100000 .ml.gd[.0005;.ml.loggrad[X;Y]]/ enlist THETA
 / iterate until cost is less than .5
-(.5<.ml.logcost[X;Y]@) .ml.gd[.0005;.ml.loggrad[X;Y]]/ enlist theta
+(.5<.ml.logcost[X;Y]@) .ml.gd[.0005;.ml.loggrad[X;Y]]/ enlist THETA
 / iterate until convergence
-/.ml.gd[.0005;.ml.loggrad[X;Y]] over enlist theta
+/.ml.gd[.0005;.ml.loggrad[X;Y]] over enlist THETA
 
 / we can use qml and the just the cost function to compute gradient
 / and optimal step size
@@ -123,29 +123,29 @@ theta: (1;3)#0f;
 opts:`iter,1000,`full`quiet /`rk`slp`tol,1e-8
 / use cost function only
 f:.ml.logcost[X;Y]enlist enlist@
-.qml.minx[opts;f;theta]
+.qml.minx[opts;f;THETA]
 
 / or compute the result even faster with the most recent version of
 / qml, by passing the gradient function as well
 f:(.ml.logcost[X;Y]enlist enlist@;raze .ml.loggrad[X;Y]enlist enlist@)
-.qml.minx[opts;f;theta]
+.qml.minx[opts;f;THETA]
 
 / but the gradient often shares computations with the cost.  providing
 / a single function that calculates both and a better minimization
 / function makes finding the optimal parameters childs play
 / NOTE: use '\r' to show in-place updates to progress across iterations
-theta:first .fmincg.fmincg[100;.ml.logcostgrad[X;Y];theta 0]
+THETA:first .fmincg.fmincg[100;.ml.logcostgrad[X;Y];THETA 0]
 
 / compare plots
-.plot.plt X,Y
-.plot.plt X,.ml.lpredict[X] enlist theta
+plt X,Y
+plt X,.ml.lpredict[X] enlist THETA
 
 / digit recognition
 / multiple runs of logistic regression (one for each digit)
 
 / load training data
-Y:enlist y:"i"$ldidx read1 `$"train-labels-idx1-ubyte"
-X:flip "f"$raze each ldidx read1 `$"train-images-idx3-ubyte"
+Y:enlist y:"i"$.mnist.ldidx read1 `$"train-labels-idx1-ubyte"
+X:flip "f"$raze each .mnist.ldidx read1 `$"train-images-idx3-ubyte"
 
 / visualize data
 / redefine plot (to include space)
@@ -155,15 +155,15 @@ plt  X[;rand count X 0]
 / learn (one vs all)
 lbls:til 10
 lambda:1
-theta:(1;1+count X)#0f
-mf:(first .fmincg.fmincg[20;;theta 0]@) / pass minimization func as parameter
+THETA:(1;1+count X)#0f
+mf:(first .fmincg.fmincg[20;;THETA 0]@) / pass minimization func as parameter
 cgf:.ml.rlogcostgrad[lambda;X]          / cost gradient function
 
 / train one set of parameters for each number
 / NOTE: peach across digits
-theta:.ml.onevsall[mf;cgf;Y;lbls]
+THETA:.ml.onevsall[mf;cgf;Y;lbls]
 
-100*avg y=p:.ml.predictonevsall[X] enlist theta / what percent did we get correct?
+100*avg y=p:.ml.predictonevsall[X] enlist THETA / what percent did we get correct?
 
 / what did we get wrong?
 p w:where not y=p
@@ -175,17 +175,17 @@ plt X[;i:rand w]
 
 / learn (neural network with 1 hidden layer)
 n:784 30 10
-ymat:.ml.diag[last[n]#1f]@\:"i"$y
+YMAT:.ml.diag[last[n]#1f]@\:"i"$y
 
 / need random weights
 
-theta:2 raze/ .ml.ninit'[-1_n;1_n];
+THETA:2 raze/ .ml.ninit'[-1_n;1_n];
 
 / batch gradient descent - steepest gradient (might find local minima)
-first .fmincg.fmincg[10;.ml.nncost[0f;n;X;ymat];theta]
+first .fmincg.fmincg[10;.ml.nncost[0f;n;X;YMAT];THETA]
 
 / TODO fix `limit error
-/.qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;ymat];theta]
+/.qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;YMAT];THETA]
 
 / stochastic gradient descent
 / - jumpy (can find global minima)
@@ -193,30 +193,30 @@ first .fmincg.fmincg[10;.ml.nncost[0f;n;X;ymat];theta]
 / on-line if n = 1
 / mini-batch if n>1 (vectorize calculations)
 
-mf:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];ymat[;y]];x]}
+mf:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];YMAT[;y]];x]}
 
 /https://www.quora.com/Whats-the-difference-between-gradient-descent-and-stochastic-gradient-descent
 / A: permutate, run n non-permuted epochs
-i:{neg[x]?x} count X 0;X:X[;i];ymat:ymat[;i];Y:Y[;i];y:Y 0
-theta:1 .ml.sgd[mf;til;10000;X]/ theta
+i:{neg[x]?x} count X 0;X:X[;i];YMAT:YMAT[;i];Y:Y[;i];y:Y 0
+THETA:1 .ml.sgd[mf;til;10000;X]/ THETA
 / B: run n permuted epochs
-theta:1 .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
+THETA:1 .ml.sgd[mf;{neg[x]?x};10000;X]/ THETA
 / C: run n random (with replacement) epochs (aka bootstrap)
-theta:1 .ml.sgd[mf;{x?x};10000;X]/ theta
+THETA:1 .ml.sgd[mf;{x?x};10000;X]/ THETA
 
 / NOTE: can run any above example with cost threshold
-theta:(1f<first .ml.nncost[0f;n;X;ymat]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
+THETA:(1f<first .ml.nncost[0f;n;X;YMAT]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ THETA
 
 / TIP: 3.4 {neg[x]?x} == 0N?x
 
 / what is the total cost?
-first .ml.nncost[0f;n;X;ymat;theta]
+first .ml.nncost[0f;n;X;YMAT;THETA]
 
 / how well did we learn
-100*avg y=p:.ml.predictonevsall[X] .ml.mcut[n] theta
+100*avg y=p:.ml.predictonevsall[X] .ml.mcut[n] THETA
 
 / visualize hidden features
-plt 1_ last first .ml.mcut[n] theta
+plt 1_ last first .ml.mcut[n] THETA
 
 / view a few mistakes
 p w:where not y=p
@@ -224,11 +224,11 @@ plt X[;rw:rand w]
 ([]p;y) rw
 
 / load testing data
-Yt:enlist yt:"i"$ldidx read1 `$"t10k-labels-idx1-ubyte"
-Xt:flip "f"$raze each ldidx read1 `$"t10k-images-idx3-ubyte"
+Yt:enlist yt:"i"$.mnist.ldidx read1 `$"t10k-labels-idx1-ubyte"
+Xt:flip "f"$raze each .mnist.ldidx read1 `$"t10k-images-idx3-ubyte"
 
 / how well can we predict
-100*avg yt=p:.ml.predictonevsall[Xt] .ml.mcut[n] theta
+100*avg yt=p:.ml.predictonevsall[Xt] .ml.mcut[n] THETA
 
 / view a few mistakes
 p w:where not yt=p

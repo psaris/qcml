@@ -10,8 +10,8 @@ plt:.plot.plot[23;12;1_.plot.c16]
 data:(2#"F";",")0:`:ex5data1.csv
 plt data
 X:1#data
-y:-1#data
-theta:(1;1+count X)#1f
+Y:-1#data
+THETA:(1;1+count X)#1f
 
-303.99319222026429 ~ .ml.rlincost[1f;X;y;theta]
--15.303015674201186 598.25074417270355 ~ first .ml.rlingrad[1f;X;y;theta]
+303.99319222026429 ~ .ml.rlincost[1f;X;Y;THETA]
+-15.303015674201186 598.25074417270355 ~ first .ml.rlingrad[1f;X;Y;THETA]
