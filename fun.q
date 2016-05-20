@@ -73,7 +73,7 @@ plt X,.ml.predict[X] THETA
 
 / qml uses QR decomposition for a more numerically stable fit, but it
 / makes us flip both X and Y
-/\ts flip .qml.mlsq[flip .ml.addint X;flip Y]
+\ts flip .qml.mlsq[flip .ml.addint X;flip Y]
 
 / nice to have closed form solution, but what if we don't?
 
@@ -123,7 +123,7 @@ f:.ml.logcost[X;Y]enlist enlist@
 
 / or compute the result even faster with the most recent version of
 / qml, by passing the gradient function as well
-f:(.ml.logcost[X;Y]enlist enlist@;raze .ml.loggrad[X;Y]enlist enlist@)
+f:.ml.logcostgradf[X;Y]
 .qml.minx[opts;f;THETA]
 
 / but the gradient often shares computations with the cost.  providing
@@ -175,13 +175,13 @@ YMAT:.ml.diag[last[n]#1f]@\:"i"$y
 
 / need random weights
 
-THETA:2 raze/ .ml.ninit'[-1_n;1_n];
+theta:2 raze/ .ml.ninit'[-1_n;1_n];
 
 / batch gradient descent - steepest gradient (might find local minima)
-first .fmincg.fmincg[10;.ml.nncost[0f;n;X;YMAT];THETA]
+first .fmincg.fmincg[1;.ml.nncost[0f;n;X;YMAT];theta]
 
-/ TODO fix `limit error
-/.qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;YMAT];THETA]
+/ NOTE: qml throws a `limit error (too many elements)
+/ .qml.minx[`quiet`full`iter,1;.ml.nncostf[0f;n;X;YMAT];enlist theta]
 
 / stochastic gradient descent
 / - jumpy (can find global minima)
@@ -194,25 +194,25 @@ mf:{first .fmincg.fmincg[5;.ml.nncost[0f;n;X[;y];YMAT[;y]];x]}
 /https://www.quora.com/Whats-the-difference-between-gradient-descent-and-stochastic-gradient-descent
 / A: permutate, run n non-permuted epochs
 i:{neg[x]?x} count X 0;X:X[;i];YMAT:YMAT[;i];Y:Y[;i];y:Y 0
-THETA:1 .ml.sgd[mf;til;10000;X]/ THETA
+theta:1 .ml.sgd[mf;til;10000;X]/ theta
 / B: run n permuted epochs
-THETA:1 .ml.sgd[mf;{neg[x]?x};10000;X]/ THETA
+theta:1 .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
 / C: run n random (with replacement) epochs (aka bootstrap)
-THETA:1 .ml.sgd[mf;{x?x};10000;X]/ THETA
+theta:1 .ml.sgd[mf;{x?x};10000;X]/ theta
 
 / NOTE: can run any above example with cost threshold
-THETA:(1f<first .ml.nncost[0f;n;X;YMAT]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ THETA
+theta:(1f<first .ml.nncost[0f;n;X;YMAT]@) .ml.sgd[mf;{neg[x]?x};10000;X]/ theta
 
 / TIP: 3.4 {neg[x]?x} == 0N?x
 
 / what is the total cost?
-first .ml.nncost[0f;n;X;YMAT;THETA]
+first .ml.nncost[0f;n;X;YMAT;theta]
 
 / how well did we learn
-100*avg y=p:.ml.predictonevsall[X] .ml.mcut[n] THETA
+100*avg y=p:.ml.predictonevsall[X] .ml.mcut[n] theta
 
 / visualize hidden features
-plt 1_ last first .ml.mcut[n] THETA
+plt 1_ last first .ml.mcut[n] theta
 
 / view a few mistakes
 p w:where not y=p
@@ -224,7 +224,7 @@ Yt:enlist yt:"i"$.mnist.ldidx read1 `$"t10k-labels-idx1-ubyte"
 Xt:flip "f"$raze each .mnist.ldidx read1 `$"t10k-images-idx3-ubyte"
 
 / how well can we predict
-100*avg yt=p:.ml.predictonevsall[Xt] .ml.mcut[n] THETA
+100*avg yt=p:.ml.predictonevsall[Xt] .ml.mcut[n] theta
 
 / view a few mistakes
 p w:where not yt=p
