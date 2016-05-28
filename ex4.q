@@ -30,7 +30,7 @@ THETA:2 raze/ .ml.ninit'[-1_n;1_n];
 THETA:2 raze/ (THETA1;THETA2)
 THETA:first .fmincg.fmincg[50;.ml.nncost[0f;n;X;YMAT];THETA]
 
-100*avg y=1+.ml.predictonevsall[X].ml.mcut[n] THETA
+100*avg y=p:1+.ml.predictonevsall[X].ml.mcut[n] THETA
 / visualize hidden features
 plt:.plot.plot[39;20;.plot.c16] .plot.hmap 20 cut
 plt 1_first THETA1
