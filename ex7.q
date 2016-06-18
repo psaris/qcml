@@ -1,6 +1,5 @@
 \l /Users/nick/q/ml/plot.q
 \l /Users/nick/q/ml/ml.q
-\l /Users/nick/q/ml/kmeans.q
 \l /Users/nick/q/qml/src/qml.q
 
 \
