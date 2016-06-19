@@ -1,5 +1,6 @@
 \l /Users/nick/q/ml/plot.q
 \l /Users/nick/q/ml/ml.q
+\l /Users/nick/q/ml/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 
 \c 30 100
@@ -39,6 +40,13 @@ maxf:{[f;n;yval;pval]
  v:nrng[n;min pval;max pval];
  m:v .ml.imax f each v;
  m}
+
+loadmovies:{
+ `Y set (943#"F";",")0:`:Y.csv;
+ `R set (943#"B";",")0:`:R.csv;
+ `X set (10#"F";",")0:`:ex8_movies.csv;
+ `THETA set (10#"F";",")0:`:Theta.csv;
+ }
 \
 \cd /Users/nick/Downloads/machine-learning-ex8/ex8
 plt:.plot.plot[39;20;1_.plot.c16]
@@ -80,8 +88,7 @@ plt X[8+0 1],enlist p<e
 
 / recommender system
 
-R:(953#"B";",")0:`:R.csv
-Y:(953#"I";",")0:`:Y.csv
+loadmovies[]
 
 / average rating for first movie (toy story):
 avg Y[0]where R 0
@@ -89,4 +96,36 @@ avg Y[0]where R 0
 / visualize dataset
 plt:.plot.plot[79;40;.plot.c68]
 reverse plt .plot.hmap Y
-X:(953#"B";",")0:`:ex8_movieParams.csv
+
+/ reduce the data set size so that this runs faster
+nu:4;nm:5;nf:3                  / n users, n movies, n features
+X:X[til nf;til nm]
+THETA:THETA[til nf;til nu]
+Y:Y[til nu;til nm]
+R:R[til nu;til nm]
+
+31.344056244274213~.ml.rcfcost[1.5;X;Y;R;THETA]
+show each .ml.rcfcost[1.5;X;Y;R;THETA]
+show each .ml.rcfgrad[1.5;X;Y;R;THETA]
+show each .ml.rcfcostgrad[5;X;Y;R;THETA]
+/ movie names
+m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
+r:count[m]#0 / initial ratings
+r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5
+r[-1+426]:5
+{where[0<x]#x}(m!r) / my ratings
+
+loadmovies[]
+Y,:r
+R,:r>0
+nu:count Y 0;nm:count Y;nf:10   / n users, n movies, n features
+X:-2+nu?/:nf#4f
+THETA:-2+nm?/:nf#4f
+(X;THETA) ~ (nf;0N)#/:(0;nf*nu) _ xtheta:2 raze/ (X;THETA)
+
+
+xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y;R;(nu;nf)];xtheta]
+XTHETA:(nf;0N)#/:(0;nf*nu) _ xtheta
+p:flip[XTHETA 1]$XTHETA 0
+mp:last[p]+sum[Y*R]%sum R / add bias and save my predictions
+`score xdesc ([]movie:m;score:mp)
