@@ -112,7 +112,6 @@ show each .ml.rcfcostgrad[5;X;Y;R;THETA]
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 r:count[m]#0 / initial ratings
 r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5
-r[-1+426]:5
 {where[0<x]#x}(m!r) / my ratings
 
 loadmovies[]
