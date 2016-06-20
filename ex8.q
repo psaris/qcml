@@ -42,8 +42,8 @@ maxf:{[f;n;yval;pval]
  m}
 
 loadmovies:{
- `Y set (943#"F";",")0:`:Y.csv;
- `R set (943#"B";",")0:`:R.csv;
+ Y:(943#"F";",")0:`:Y.csv;
+ `Y set Y+0N 0 (943#"B";",")0:`:R.csv;
  `X set (10#"F";",")0:`:ex8_movies.csv;
  `THETA set (10#"F";",")0:`:Theta.csv;
  }
@@ -91,7 +91,7 @@ plt X[8+0 1],enlist p<e
 loadmovies[]
 
 / average rating for first movie (toy story):
-avg Y[0]where R 0
+avg Y 0
 
 / visualize dataset
 plt:.plot.plot[79;40;.plot.c68]
@@ -102,29 +102,27 @@ nu:4;nm:5;nf:3                  / n users, n movies, n features
 X:X[til nf;til nm]
 THETA:THETA[til nf;til nu]
 Y:Y[til nu;til nm]
-R:R[til nu;til nm]
 
-31.344056244274213~.ml.rcfcost[1.5;X;Y;R;THETA]
-show each .ml.rcfcost[1.5;X;Y;R;THETA]
-show each .ml.rcfgrad[1.5;X;Y;R;THETA]
-show each .ml.rcfcostgrad[5;X;Y;R;THETA]
+31.344056244274213~.ml.rcfcost[1.5;X;Y;THETA]
+.ml.rcfcost[1.5;X;Y;THETA]
+show each .ml.rcfgrad[1.5;X;Y;THETA]
+show each .ml.rcfcostgrad[5;Y;(nm;nf);2 raze/ (X;THETA)]
 / movie names
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
-r:count[m]#0 / initial ratings
-r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5
+r:count[m]#0n / initial ratings
+r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5f
 {where[0<x]#x}(m!r) / my ratings
 
 loadmovies[]
 Y,:r
-R,:r>0
-nu:count Y 0;nm:count Y;nf:10   / n users, n movies, n features
-X:-2+nu?/:nf#4f
-THETA:-2+nm?/:nf#4f
-(X;THETA) ~ (nf;0N)#/:(0;nf*nu) _ xtheta:2 raze/ (X;THETA)
+nu:count Y;nm:count Y 0;nf:10   / n users, n movies, n features
+X:-2+nm?/:nf#4f
+THETA:-2+nu?/:nf#4f
+(X;THETA) ~ (nf;0N)#/:(0;nf*nm) _ xtheta:2 raze/ (X;THETA)
 
 
-xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y;R;(nu;nf)];xtheta]
+xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y;(nm;nf)];xtheta]
 XTHETA:(nf;0N)#/:(0;nf*nu) _ xtheta
 p:flip[XTHETA 1]$XTHETA 0
-mp:last[p]+sum[Y*R]%sum R / add bias and save my predictions
+mp:last[p]+avg each flip Y / add bias and save my predictions
 `score xdesc ([]movie:m;score:mp)
