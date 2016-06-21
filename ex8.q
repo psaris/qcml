@@ -28,11 +28,12 @@ jaccard:{x[0]%sum x _ 1}
 
 / Fowlkes–Mallows index (E. B. Fowlkes & C. L. Mallows 1983)
 / geometric mean of precision and recall
-FW:{
- p:x[0]%sum x 0 2; / precision
- r:x[0]%sum x 0 3; / recall
- f:sqrt p*r;
- f}
+FM:{x[0]%sqrt sum[x 0 2]*sum x 0 3}
+
+/ Matthews Correlation Coefficient
+/ geometric mean of the regression coefficients of the problem and its dual
+/ -1 0 1 (none right, same as random prediction, all right)
+MCC:{ ((-). x[0 2]*x 1 3)%sqrt prd x[0 0 1 1]+x 2 3 2 3}
 
 nrng:{[n;s;e]s+til[1+n]*(e-s)%n}  / divide range (s;e) into n buckets
 
@@ -104,25 +105,28 @@ THETA:THETA[til nf;til nu]
 Y:Y[til nu;til nm]
 
 31.344056244274213~.ml.rcfcost[1.5;X;Y;THETA]
-.ml.rcfcost[1.5;X;Y;THETA]
 show each .ml.rcfgrad[1.5;X;Y;THETA]
-show each .ml.rcfcostgrad[5;Y;(nm;nf);2 raze/ (X;THETA)]
+show each .ml.rcfcostgrad[1.5;Y;(nm;nf);2 raze/ (X;THETA)]
 / movie names
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
-r:count[m]#0n / initial ratings
+r:count[m]#0n                   / initial ratings
 r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5f
-{where[0<x]#x}(m!r) / my ratings
+{where[0<x]#x}(m!r)             / my ratings
 
 loadmovies[]
 Y,:r
 nu:count Y;nm:count Y 0;nf:10   / n users, n movies, n features
-X:-2+nm?/:nf#4f
-THETA:-2+nu?/:nf#4f
-(X;THETA) ~ (nf;0N)#/:(0;nf*nm) _ xtheta:2 raze/ (X;THETA)
+X:-1+nm?/:nf#2f
+THETA:-1+nu?/:nf#2f
+n:(nm;nf)
+(X;THETA) ~ .ml.cfcut[n] xtheta:2 raze/ (X;THETA)
 
+a:avg each flip Y / average per movie
+xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];xtheta] / learn
+XTHETA:.ml.cfcut[n] xtheta      / explode parameters
+p:flip[XTHETA 1]$XTHETA 0       / predictions
+mp:last[p]+a / add bias and save my predictions
+`score xdesc ([]movie:m;score:mp) / display sorted predictions
 
-xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y;(nm;nf)];xtheta]
-XTHETA:(nf;0N)#/:(0;nf*nu) _ xtheta
-p:flip[XTHETA 1]$XTHETA 0
-mp:last[p]+avg each flip Y / add bias and save my predictions
-`score xdesc ([]movie:m;score:mp)
+m (5#idesc@) each XTHETA[0]+\:a
+m (-5#idesc@) each XTHETA[0]+\:a
