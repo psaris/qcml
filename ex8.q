@@ -17,8 +17,8 @@ accuracy:{sum[x 0 1]%sum x}
 F:{[b;x]
  p:x[0]%sum x 0 2; / precision
  r:x[0]%sum x 0 3; / recall
- f:r*p*1+b*b;
- f%:r+p*b*b;
+ f:r*p*1+b2:b*b;
+ f%:r+p*b2;
  f}
 F1:F[1]
 
