@@ -42,6 +42,8 @@ maxf:{[f;n;yval;pval]
  m:v .ml.imax f each v;
  m}
 
+/ missing Y values (specified in R) are converted from 0 to 0N so
+/ there is no further need use R
 loadmovies:{
  Y:(943#"F";",")0:`:Y.csv;
  `Y set Y+0N 0 (943#"B";",")0:`:R.csv;
@@ -89,24 +91,28 @@ plt X[8+0 1],enlist p<e
 
 / recommender system
 
-loadmovies[]
-
-/ average rating for first movie (toy story):
-avg Y 0
+loadmovies[]             / X, Y, THETA
+avg Y 0                  / average rating for first movie (toy story):
 
 / visualize dataset
 plt:.plot.plot[79;40;.plot.c68]
 reverse plt .plot.hmap Y
 
 / reduce the data set size so that this runs faster
-nu:4;nm:5;nf:3                  / n users, n movies, n features
+n:(nu:4;nm:5;nf:3)              / n users, n movies, n features
 X:X[til nf;til nm]
 THETA:THETA[til nf;til nu]
 Y:Y[til nu;til nm]
-
+22.224603725685668~.ml.rcfcost[0;X;Y;THETA]
 31.344056244274213~.ml.rcfcost[1.5;X;Y;THETA]
+
+(X;THETA) ~ .ml.cfcut[n] xtheta:2 raze/ (X;THETA)
+
+.ml.checkcfgradients[0f;n]
+.ml.checkcfgradients[1.5;n]
+
 show each .ml.rcfgrad[1.5;X;Y;THETA]
-show each .ml.rcfcostgrad[1.5;Y;(nm;nf);2 raze/ (X;THETA)]
+show each .ml.rcfcostgrad[1.5;Y;n;2 raze/ (X;THETA)]
 / movie names
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 r:count[m]#0n                   / initial ratings
@@ -115,17 +121,14 @@ r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5f
 
 loadmovies[]
 Y,:r
-nu:count Y;nm:count Y 0;nf:10   / n users, n movies, n features
-X:-1+nm?/:nf#2f
-THETA:-1+nu?/:nf#2f
-n:(nm;nf)
-(X;THETA) ~ .ml.cfcut[n] xtheta:2 raze/ (X;THETA)
+n:(nu:count Y;nm:count Y 0;nf:10)   / n users, n movies, n features
+xtheta:2 raze/ (X:-1+nm?/:nf#2f;THETA:-1+nu?/:nf#2f)
 
 a:avg each flip Y / average per movie
 xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];xtheta] / learn
-XTHETA:.ml.cfcut[n] xtheta      / explode parameters
-p:flip[XTHETA 1]$XTHETA 0       / predictions
-mp:last[p]+a / add bias and save my predictions
+XTHETA:.ml.cfcut[n] xtheta        / explode parameters
+p:flip[XTHETA 1]$XTHETA 0         / predictions
+mp:last[p]+a                      / add bias and save my predictions
 `score xdesc ([]movie:m;score:mp) / display sorted predictions
 
 m (5#idesc@) each XTHETA[0]+\:a
