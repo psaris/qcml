@@ -21,7 +21,7 @@ YMAT:.ml.diag[10#1f]@\:"i"$y-1
 
 n:400 25 10
 YMAT:.ml.diag[last[n]#1f]@\:"i"$y-1
-\ts sum each   sum each g:.ml.mcut[n] last .ml.nncost[1f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
+\ts sum each   sum each g:.ml.nncut[n] last .ml.nncost[1f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
 THETA:2 raze/ .ml.ninit'[-1_n;1_n];
 .fmincg.fmincg[50;.ml.nncost[0f;n;X;YMAT];THETA]
 .ml.nncost[0f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
@@ -30,13 +30,13 @@ THETA:2 raze/ .ml.ninit'[-1_n;1_n];
 THETA:2 raze/ (THETA1;THETA2)
 THETA:first .fmincg.fmincg[50;.ml.nncost[0f;n;X;YMAT];THETA]
 
-100*avg y=p:1+.ml.predictonevsall[X].ml.mcut[n] THETA
+100*avg y=p:1+.ml.predictonevsall[X].ml.nncut[n] THETA
 / visualize hidden features
 plt:.plot.plot[39;20;.plot.c16] .plot.hmap 20 cut
 plt 1_first THETA1
 
 / mistakes
 \c 100 200
-w:-4?where not y=p:1+.ml.predictonevsall[X].ml.mcut[n] THETA
+w:-4?where not y=p:1+.ml.predictonevsall[X].ml.nncut[n] THETA
 (,') over plt each flip X[;w]
 flip([]p;y)w
