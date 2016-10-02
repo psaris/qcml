@@ -129,7 +129,7 @@ xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];xtheta] / learn
 XTHETA:.ml.cfcut[n] xtheta        / explode parameters
 p:flip[XTHETA 1]$XTHETA 0         / predictions
 mp:last[p]+a                      / add bias and save my predictions
-`score xdesc ([]movie:m;score:mp) / display sorted predictions
+`score xdesc ([]movie:m;rating:r;score:mp) / display sorted predictions
 
 m (5#idesc@) each XTHETA[0]+\:a
 m (-5#idesc@) each XTHETA[0]+\:a
