@@ -48,7 +48,7 @@ loadmovies:{
  Y:(943#"F";",")0:`:Y.csv;
  `Y set Y+0N 0 (943#"B";",")0:`:R.csv;
  `X set (10#"F";",")0:`:ex8_movies.csv;
- `THETA set (10#"F";",")0:`:Theta.csv;
+ `THETA set flip (10#"F";",")0:`:Theta.csv;
  }
 \
 \cd /Users/nick/Downloads/machine-learning-ex8/ex8
@@ -99,20 +99,20 @@ plt:.plot.plot[79;40;.plot.c68]
 reverse plt .plot.hmap Y
 
 / reduce the data set size so that this runs faster
-n:(nu:4;nm:5;nf:3)              / n users, n movies, n features
+n:(nu:4;nf:3;nm:5)              / n users, n features, n movies
+THETA:THETA[til nu;til nf]
 X:X[til nf;til nm]
-THETA:THETA[til nf;til nu]
 Y:Y[til nu;til nm]
-22.224603725685668~.ml.rcfcost[0;X;Y;THETA]
-31.344056244274213~.ml.rcfcost[1.5;X;Y;THETA]
+22.224603725685668~.ml.rcfcost[0;Y;THETA;X]
+31.344056244274213~.ml.rcfcost[1.5;Y;THETA;X]
 
-(X;THETA) ~ .ml.cfcut[n] xtheta:2 raze/ (X;THETA)
+(THETA;X) ~ .ml.cfcut[n] thetax:2 raze/ (THETA;X)
 
 .ml.checkcfgradients[0f;n]
 .ml.checkcfgradients[1.5;n]
 
-show each .ml.rcfgrad[1.5;X;Y;THETA]
-show each .ml.rcfcostgrad[1.5;Y;n;2 raze/ (X;THETA)]
+show each .ml.rcfgrad[1.5;Y;THETA;X]
+show each  .ml.cfcut[n] last .ml.rcfcostgrad[1.5;Y;n;2 raze/ (THETA;X)]
 / movie names
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 r:count[m]#0n                   / initial ratings
@@ -121,15 +121,14 @@ r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5f
 
 loadmovies[]
 Y,:r
-n:(nu:count Y;nm:count Y 0;nf:10)   / n users, n movies, n features
-xtheta:2 raze/ (X:-1+nm?/:nf#2f;THETA:-1+nu?/:nf#2f)
+n:(nu:count Y;nf:10;nm:count Y 0)   / n users, n features, movies
+thetax:2 raze/ (THETA:-1+nf?/:nu#2f;X:-1+nm?/:nf#2f)
 
 a:avg each flip Y / average per movie
-xtheta:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];xtheta] / learn
-XTHETA:.ml.cfcut[n] xtheta        / explode parameters
-p:flip[XTHETA 1]$XTHETA 0         / predictions
+thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];thetax] / learn
+p:($) . THETAX: .ml.cfcut[n] thetax / predictions
 mp:last[p]+a                      / add bias and save my predictions
 `score xdesc ([]movie:m;rating:r;score:mp) / display sorted predictions
 
-m (5#idesc@) each XTHETA[0]+\:a
-m (-5#idesc@) each XTHETA[0]+\:a
+m (5#idesc@) each THETAX[1]+\:a
+m (-5#idesc@) each THETAX[1]+\:a
