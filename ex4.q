@@ -16,13 +16,14 @@ THETA2:flip (26#"F";",") 0:`:THETA2.csv
 YMAT:.ml.diag[10#1f]@\:"i"$y-1
 0.28762916516131876 = .ml.rlogcost[0f;X;YMAT] (THETA1;THETA2)
 0.38376985909092381 = .ml.rlogcost[1f;X;YMAT] (THETA1;THETA2)
-0.026047433852894011 = sum 2 raze/ .ml.rloggrad[0f;X;Y] (THETA1;THETA2)
-0.0099559365856808548 = sum 2 raze/ .ml.rloggrad[1f;X;Y] (THETA1;THETA2)
+0.026047433852894011 = sum 2 raze/ .ml.rloggrad[0f;X;YMAT] (THETA1;THETA2)
+0.0099559365856808548 = sum 2 raze/ .ml.rloggrad[1f;X;YMAT] (THETA1;THETA2)
 
 n:400 25 10
 YMAT:.ml.diag[last[n]#1f]@\:"i"$y-1
-\ts sum each   sum each g:.ml.nncut[n] last .ml.nncost[1f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
+\ts sum each sum each g:.ml.nncut[n] last .ml.nncost[1f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
 THETA:2 raze/ .ml.ninit'[-1_n;1_n];
+
 .fmincg.fmincg[50;.ml.nncost[0f;n;X;YMAT];THETA]
 .ml.nncost[0f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
 
