@@ -18,7 +18,7 @@ alpha:.001                      / learning rate
 / plot prediction of optimal theta
 .plot.plt X,.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA]$.ml.addint X
 flip .qml.mlsq[flip .ml.addint X;flip Y] / qml least squares
-flip .ml.mlsq[.ml.addint X;Y]           / normal equations
+.ml.mlsq[Y;.ml.addint X]                 / normal equations
 Y lsq .ml.addint X                       / q least squares
 
 data:("FFF";",")0:`ex1data2.txt
