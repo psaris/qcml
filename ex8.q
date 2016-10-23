@@ -5,36 +5,6 @@
 
 \c 30 100
 
-/ given expected boolean values x and observered value y, return
-/ tp,tn,fp,fn
-tptnfpfn:{(x;nx;x;nx:not x){sum x*y}'(y;ny;ny:not y;y)}
-
-/ aka rand measure (William M. Rand 1971)
-accuracy:{sum[x 0 1]%sum x}
-
-/ f measure: given (b)eta and x:tptnfpfn
-/ harmonic mean of precision and recall
-F:{[b;x]
- p:x[0]%sum x 0 2; / precision
- r:x[0]%sum x 0 3; / recall
- f:r*p*1+b2:b*b;
- f%:r+p*b2;
- f}
-F1:F[1]
-
-/ returns a number between 0 and 1 which indicates the similarity
-/ between two datasets
-jaccard:{x[0]%sum x _ 1}
-
-/ Fowlkes–Mallows index (E. B. Fowlkes & C. L. Mallows 1983)
-/ geometric mean of precision and recall
-FM:{x[0]%sqrt sum[x 0 2]*sum x 0 3}
-
-/ Matthews Correlation Coefficient
-/ geometric mean of the regression coefficients of the problem and its dual
-/ -1 0 1 (none right, same as random prediction, all right)
-MCC:{ ((-). x[0 2]*x 1 3)%sqrt prd x[0 0 1 1]+x 2 3 2 3}
-
 nrng:{[n;s;e]s+til[1+n]*(e-s)%n}  / divide range (s;e) into n buckets
 
 maxf:{[f;n;yval;pval]
@@ -48,9 +18,15 @@ loadmovies:{
  Y:(943#"F";",")0:`:Y.csv;
  `Y set Y+0N 0 (943#"B";",")0:`:R.csv;
  `X set (10#"F";",")0:`:ex8_movies.csv;
- `THETA set flip (10#"F";",")0:`:Theta.csv;
+ `THETA set (10#"F";",")0:`:Theta.csv;
  }
-\
+
+
+.ml.mm:.qml.mm
+.ml.mmt:.qml.mmx[`rflip]
+.ml.mtm:.qml.mmx[`lflip]
+.ml.inv:.qml.minv
+
 \cd /Users/nick/Downloads/machine-learning-ex8/ex8
 plt:.plot.plot[39;20;1_.plot.c16]
 X:(2#"F";",")0:`:ex8data1.csv
@@ -63,7 +39,7 @@ p:.ml.gaussmv[mu;s2] X
 plt X,enlist p
 pval:.ml.gaussmv[mu;s2] Xval
 / plot relationship between cutoff and F1
-f:F1 tptnfpfn[yval]pval<
+f:.ml.F1 .ml.tptnfpfn[yval]pval<
 plt (e;f each e:nrng[1000;min pval;max pval])
 / find optimal cutoff
 f 0N!e:.qml.min[1f%f@;med pval]
@@ -79,7 +55,7 @@ s2:var each X
 p:.ml.gaussmv[mu;s2] X
 pval:.ml.gaussmv[mu;s2] Xval
 / plot relationship between cutoff and F1
-f:F1 tptnfpfn[yval]pval<
+f:.ml.F1 .ml.tptnfpfn[yval]pval<
 plt (e;f each e:nrng[1000;min pval;max pval])
 / find optimal cutoff
 f 0N!e:.qml.min[1f%f@;med pval]
@@ -99,8 +75,8 @@ plt:.plot.plot[79;40;.plot.c68]
 reverse plt .plot.hmap Y
 
 / reduce the data set size so that this runs faster
-n:(nu:4;nf:3;nm:5)              / n users, n features, n movies
-THETA:THETA[til nu;til nf]
+n:(nu:4;nm:5;nf:3)              / n users, n movies, n features
+THETA:THETA[til nf;til nu]
 X:X[til nf;til nm]
 Y:Y[til nu;til nm]
 22.224603725685668~.ml.rcfcost[0;Y;THETA;X]
@@ -121,12 +97,12 @@ r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5f
 
 loadmovies[]
 Y,:r
-n:(nu:count Y;nf:10;nm:count Y 0)   / n users, n features, movies
-thetax:2 raze/ (THETA:-1+nf?/:nu#2f;X:-1+nm?/:nf#2f)
+n:(nu:count Y;nm:count Y 0;nf:10)   / n users, n movies, n features
+thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
 
 a:avg each flip Y / average per movie
-thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];thetax] / learn
-p:($) . THETAX: .ml.cfcut[n] thetax / predictions
+\ts thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[10f;Y-\:a;n];thetax] / learn
+p:.ml.mtm . THETAX: .ml.cfcut[n] thetax / predictions
 mp:last[p]+a                      / add bias and save my predictions
 `score xdesc ([]movie:m;rating:r;score:mp) / display sorted predictions
 
