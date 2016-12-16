@@ -1,6 +1,6 @@
-\l /Users/nick/q/ml/plot.q
-\l /Users/nick/q/ml/ml.q
-\l /Users/nick/q/ml/fmincg.q
+\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/ml.q
+\l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 
 \c 30 100

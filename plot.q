@@ -1,1 +1,0 @@
-../funq/plot.q

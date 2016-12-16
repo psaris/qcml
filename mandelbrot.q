@@ -1,9 +1,9 @@
-\l /Users/nick/q/ml/plot.q
+\l /Users/nick/q/funq/plot.q
 
 pbm:{("P1";" " sv string count'[x;x 0])," " 0:"b"$x}
 pgm:{("P2";" " sv string count'[x;x 0];string max/[x])," " 0:x}
 
-\ 
+\
 /k mandelbrot http://kparc.com/z/comp.k
 \t +/~^+/b*b:49{c+(-/x*x;2**/x)}/c:-1.5 -1+(2*!2#w)%w:10
 / q

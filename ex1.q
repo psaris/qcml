@@ -1,5 +1,5 @@
-\l /Users/nick/q/ml/plot.q
-\l /Users/nick/q/ml/ml.q
+\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
 
 \
@@ -31,5 +31,6 @@ THETA:(1;1+count X)#0f
 4000 .ml.gd[alpha;.ml.lingrad[X;Y]]/ THETA
 
 flip .qml.mlsq[flip .ml.addint X;flip Y] / qml least squares
-flip .ml.mlsq[Y;.ml.addint X]            / normal equations
+.qml.mlsqx[`flip;.ml.addint X;Y]         / flipped
+.ml.mlsq[Y;.ml.addint X]                 / normal equations
 Y lsq .ml.addint X                       / q least squares

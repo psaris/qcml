@@ -1,6 +1,6 @@
-\l /Users/nick/q/ml/plot.q
-\l /Users/nick/q/ml/ml.q
-\l /Users/nick/q/ml/fmincg.q
+\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/ml.q
+\l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 
 \
@@ -38,6 +38,9 @@ plt 1_first THETA1
 
 / mistakes
 \c 100 200
-w:-4?where not y=p:1+.ml.predictonevsall[X].ml.nncut[n] THETA
-(,') over plt each flip X[;w]
+w:-4?where not y=p:1f+.ml.predictonevsall[X].ml.nncut[n] THETA
+-1 value (,') over plt each flip X[;w];
 flip([]p;y)w
+
+/ confusion matrix
+.ml.cm[y;p]

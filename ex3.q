@@ -1,6 +1,6 @@
-\l /Users/nick/q/ml/plot.q
-\l /Users/nick/q/ml/ml.q
-\l /Users/nick/q/ml/fmincg.q
+\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/ml.q
+\l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 
 \
@@ -10,14 +10,14 @@ Y:(1#"F";",")0:`:ex3data2.csv  / integers 1-10 (10=0)
 
 / plot 4 random bitmaps
 plt:(.plot.plot[20;20;.plot.c16] .plot.hmap 20 cut)
-(,') over  plt each flip X[;-4?til count X 0]
+-1 value (,') over  plt each flip X[;-4?til count X 0];
 
-lbls:1+til 10
+lbls:"f"$1+til 10
 lambda:1
 THETA:(1;1+count X)#0f
 
 / using fmincg
-mf:(first .fmincg.fmincg[200;;THETA 0]@) / pass min func projection as parameter
+mf:(first .fmincg.fmincg[20;;THETA 0]@) / pass min func projection as parameter
 cgf:.ml.rlogcostgrad[lambda;X] / cost gradient function
 
 / using qml.minx
@@ -28,5 +28,8 @@ THETA:.ml.onevsall[mf;cgf;Y;lbls] / train one set of parameters for each number
 100*avg first[Y]=lbls .ml.predictonevsall[X] enlist THETA / what percent did we get correct?
 / mistakes
 w:-4?where not first[Y]=p:lbls .ml.predictonevsall[X] enlist THETA / what percent did we get correct?
-(,') over plt each flip X[;w]
+-1 value (,') over plt each flip X[;w];
 flip([]p;first[Y]) w
+
+/ confusion matrix
+.ml.cm[y;p]
