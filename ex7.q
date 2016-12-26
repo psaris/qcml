@@ -2,6 +2,18 @@
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
 
+/TODO: get more efficient method
+covm:{(1%count x 0)*x$/:\:x}
+/cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}
+
+pca:{[k;X]
+ Xn:.ml.zscore each X;
+ v:last .qml.mev covm Xn;
+ Z:(k#v)$Xn; / project onto k dimensions
+ Xr:flip[k#v]$Z; /reconstruct initial image
+ (v;Z;Xr)}
+
+
 \
 \cd /Users/nick/Downloads/machine-learning-ex7/ex7
 plt:.plot.plot[50;20;1_.plot.c16]
@@ -43,7 +55,7 @@ a:.plot.plot[255;128;.plot.c16] .plot.hmap 128 cut r2g$Xr
 
 X:("FF";",") 0:`:ex7_pca.csv
 plt X
-r:`v`Z`Xr!.ml.pca[1] X
+r:`v`Z`Xr!pca[1] X
 / recover initial data
 plt r`Xr
 
@@ -52,24 +64,9 @@ X:(1024#"F";",") 0:`:ex7faces.csv
 / visualize faces
 \c 50 200
 plt:.plot.plot[63;32;.plot.c10] .plot.hmap 32 cut
-plt:.plot.plot[63;32;.plot.c16] .plot.hmap 32 cut
-plt:.plot.plot[63;32;.plot.c68] .plot.hmap 32 cut
-plt:.plot.plot[63;32;.plot.c89] .plot.hmap 32 cut
 plt X[;i:rand 5000]
 plt X[;i]
 (,') over plt each flip X[;-4?5000]
-
-/TODO: get more efficient method
-covm:{(1%count x 0)*x$/:\:x}
-/cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}
-
-pca:{[k;X]
- Xn:zscore each X;
- v:last .qml.mev covm Xn;
- Z:(k#v)$Xn; / project onto k dimensions
- Xr:flip[k#v]$Z; /reconstruct initial image
- (v;Z;Xr)}
-
 
 r:`v`Z`Xr!pca[100] X
 / pca faces
