@@ -100,7 +100,7 @@ Y,:r
 n:(nu:count Y;nm:count Y 0;nf:10)   / n users, n movies, n features
 thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
 
-a:.ml.frow[avg] Y               / average per movie
+a:.ml.f2nd[avg] Y               / average per movie
 thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[1f;Y-\:a;n];thetax] / learn
 p:.ml.mtm . THETAX: .ml.cfcut[n] thetax / predictions
 mp:last[p]+a                      / add bias and save my predictions
