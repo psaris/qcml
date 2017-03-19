@@ -29,7 +29,7 @@ THETA:.ml.onevsall[mf;cgf;Y;lbls] / train one set of parameters for each number
 / mistakes
 w:-4?where not y=p:lbls .ml.predictonevsall[X] enlist THETA / what percent did we get correct?
 -1 value (,') over plt each flip X[;w];
-flip([]p;y) w
+show flip([]p;y) w
 
 / confusion matrix
-.ml.cm[y;p]
+show .ml.cm[y;p]

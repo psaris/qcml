@@ -40,7 +40,7 @@ plt 1_first THETA1
 \c 100 200
 w:-4?where not y=p:1f+.ml.predictonevsall[X].ml.nncut[n] THETA
 -1 value (,') over plt each flip X[;w];
-flip([]p;y)w
+show flip([]p;y)w
 
 / confusion matrix
-.ml.cm[y;p]
+show .ml.cm[y;p]

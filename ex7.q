@@ -54,23 +54,23 @@ g:.ml.cgroup[.ml.edist;X;C]
 a:.plot.plot[255;128;.plot.c16] .plot.hmap 128 cut r2g$Xr
 
 X:("FF";",") 0:`:ex7_pca.csv
-plt X
+-1 value plt X;
 r:`v`Z`Xr!pca[1] X
 / recover initial data
-plt r`Xr
+-1 value plt r`Xr;
 
 / faces
 X:(1024#"F";",") 0:`:ex7faces.csv
 / visualize faces
 \c 50 200
 plt:.plot.plot[63;32;.plot.c10] .plot.hmap 32 cut
-plt X[;i:rand 5000]
-plt X[;i]
-(,') over plt each flip X[;-4?5000]
+-1 value plt X[;i:rand 5000];
+-1 value plt X[;i];
+-1 value (,') over plt each flip X[;-4?5000];
 
 r:`v`Z`Xr!pca[100] X
 / pca faces
 (,') over plt each 2# r[`v]
 / recover initial faces
-plt r[`Xr][;0]
-plt X[;0]
+-1 value plt r[`Xr][;0];
+-1 value plt X[;0];

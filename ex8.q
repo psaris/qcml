@@ -72,10 +72,10 @@ avg Y 0                  / average rating for first movie (toy story):
 
 / visualize dataset
 plt:.plot.plot[79;40;.plot.c10]
-reverse plt .plot.hmap Y
+-1 value reverse plt .plot.hmap Y;
 
 / reduce the data set size so that this runs faster
-n:(nu:4;nm:5;nf:3)              / n users, n movies, n features
+n:(nu:4;nf:3)                   / n users, n movies, n features
 THETA:THETA[til nf;til nu]
 X:X[til nf;til nm]
 Y:Y[til nu;til nm]
@@ -93,18 +93,19 @@ show each  .ml.cfcut[n] last .ml.rcfcostgrad[1.5;Y;n;2 raze/ (THETA;X)]
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 r:count[m]#0n                   / initial ratings
 r[-1+1 98 7 12 54 64 66 69 183 226 355]:4 2 3 5 4 5 3 5 4 5 5f
-{where[0<x]#x}(m!r)             / my ratings
+show {where[0<x]#x}(m!r)             / my ratings
 
 loadmovies[]
 Y,:r
-n:(nu:count Y;nm:count Y 0;nf:10)   / n users, n movies, n features
+nu:count Y;nm:count Y 0;nf:10   / n users, n movies, n features
+n:(nu;nf);
 thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
 
 a:.ml.f2nd[avg] Y               / average per movie
 thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[1f;Y-\:a;n];thetax] / learn
 p:.ml.mtm . THETAX: .ml.cfcut[n] thetax / predictions
 mp:last[p]+a                      / add bias and save my predictions
-`score xdesc ([]movie:m;rating:r;score:mp) / display sorted predictions
+show `score xdesc ([]movie:m;rating:r;score:mp) / display sorted predictions
 
-m idesc each THETAX[1]+\:a
-m idesc each THETAX[1]+\:a
+show m idesc each THETAX[1]+\:a
+show m idesc each THETAX[1]+\:a
