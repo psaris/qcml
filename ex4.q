@@ -2,6 +2,7 @@
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
+\l /Users/nick/q/funq/qmlmm.q
 
 \
 .ml.checknngradients[.1f;3 5 3]

@@ -1,6 +1,7 @@
 \l /Users/nick/q/funq/plot.q
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
+\l /Users/nick/q/funq/qmlmm.q
 
 /TODO: get more efficient method
 covm:{(1%count x 0)*x$/:\:x}
@@ -36,7 +37,7 @@ X:(3#"F";",")0:`:bird_small.csv
 / convert RBG -> Gray Scale
 / https://en.wikipedia.org/wiki/Grayscale
 r2g:0.2989 0.5870 0.1140
-.plot.plot[255;128;.plot.c89] .plot.hmap 128 cut r2g$X
+.plot.plot[255;128;.plot.c68] .plot.hmap 128 cut r2g$X
 
 / map to 4 bits
 C:10 .ml.kmeans[X]/16

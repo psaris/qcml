@@ -1,6 +1,7 @@
 \l /Users/nick/q/funq/plot.q
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
+\l /Users/nick/q/funq/qmlmm.q
 
 \
 \c 50 100
