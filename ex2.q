@@ -1,14 +1,14 @@
-\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/util.q
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
 
 \
 \c 50 100
-.plot.plt .ml.sigmoid .1*-50+til 100 / plot sigmoid function
+-1 value .util.plt .ml.sigmoid .1*-50+til 100; / plot sigmoid function
 \cd /Users/nick/Downloads/machine-learning-ex2/ex2
 data:("FFF";",")0:`:ex2data1.txt
-.plot.plt data
+.util.plt data
 X:2#data
 Y:-1#data
 THETA:(1;1+count X)#0f
@@ -25,6 +25,6 @@ THETA:(1;1+count X)#0f
 
 / compare plots
 THETA:.qml.minx[opts;.ml.logcost[X;Y];THETA]
-.plot.plt data
-.plot.plt X,.ml.lpredict[X] THETA
+.util.plt data
+.util.plt X,.ml.lpredict[X] THETA
 

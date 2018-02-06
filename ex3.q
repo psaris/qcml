@@ -1,8 +1,8 @@
-\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/util.q
 \l /Users/nick/q/funq/ml.q
-\l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
+\l /Users/nick/q/funq/fmincg.q
 
 \
 \cd /Users/nick/Downloads/machine-learning-ex3/ex3
@@ -10,7 +10,7 @@ X:(400#"F";",")0:`:ex3data1.csv / 5000 20x20 bitmaps
 y:first Y:(1#"F";",")0:`:ex3data2.csv  / integers 1-10 (10=0)
 
 / plot 4 random bitmaps
-plt:(.plot.plot[20;20;.plot.c16] .plot.hmap 20 cut)
+plt:.util.plot[20;10;.util.c16] .util.hmap 20 cut
 -1 value (,') over  plt each flip X[;-4?til count X 0];
 
 lbls:"f"$1+til 10

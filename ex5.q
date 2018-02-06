@@ -1,12 +1,12 @@
-\l /Users/nick/q/funq/plot.q
-\l /Users/nick/q/funq/fmincg.q
+\l /Users/nick/q/funq/util.q
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
+\l /Users/nick/q/funq/fmincg.q
 
 \
 \cd /Users/nick/Downloads/machine-learning-ex5/ex5
-plt:.plot.plot[23;12;1_.plot.c16]
+plt:.util.plot[23;12;.util.c16]
 data:(2#"F";",")0:`:ex5data1.csv
 plt data
 X:1#data

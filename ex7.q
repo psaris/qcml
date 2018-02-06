@@ -1,4 +1,4 @@
-\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/util.q
 \l /Users/nick/q/funq/ml.q
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
@@ -17,7 +17,7 @@ pca:{[k;X]
 
 \
 \cd /Users/nick/Downloads/machine-learning-ex7/ex7
-plt:.plot.plot[50;20;1_.plot.c16]
+plt:.util.plot[50;20;.util.c16]
 X:(2#"F";",")0:`:ex7data2.csv
 plt X
 C:flip (3 3;6 2;8 5)
@@ -34,10 +34,7 @@ C:flip (3 3;6 2;8 5)
 / 128*128*24 = 393,216
 X:(3#"F";",")0:`:bird_small.csv
 
-/ convert RBG -> Gray Scale
-/ https://en.wikipedia.org/wiki/Grayscale
-r2g:0.2989 0.5870 0.1140
-.plot.plot[255;128;.plot.c68] .plot.hmap 128 cut r2g$X
+show .util.plot[128;64;.util.c68] .util.hmap 128 cut .util.grayscale X
 
 / map to 4 bits
 C:10 .ml.kmeans[X]/16
@@ -52,7 +49,7 @@ g:.ml.cgroup[.ml.edist;X;C]
 /TODO: group stocks (generated with qtips) into sectors
 
 / plot reconstructed image
-a:.plot.plot[255;128;.plot.c16] .plot.hmap 128 cut r2g$Xr
+show .util.plot[128;64;.util.c16] .util.hmap 128 cut .util.grayscale Xr;
 
 X:("FF";",") 0:`:ex7_pca.csv
 -1 value plt X;
@@ -64,7 +61,7 @@ r:`v`Z`Xr!pca[1] X
 X:(1024#"F";",") 0:`:ex7faces.csv
 / visualize faces
 \c 50 200
-plt:.plot.plot[63;32;.plot.c10] .plot.hmap 32 cut
+plt:.util.plot[32;16;.util.c10] .util.hmap 32 cut
 -1 value plt X[;i:rand 5000];
 -1 value plt X[;i];
 -1 value (,') over plt each flip X[;-4?5000];

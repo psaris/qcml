@@ -1,15 +1,13 @@
-\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/util.q
 \l /Users/nick/q/funq/ml.q
-\l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
+\l /Users/nick/q/funq/fmincg.q
 
 \c 30 100
 
-nrng:{[n;s;e]s+til[1+n]*(e-s)%n}  / divide range (s;e) into n buckets
-
 maxf:{[f;n;yval;pval]
- v:nrng[n;min pval;max pval];
+ v:.util.nrng[n;min pval;max pval];
  m:v .ml.imax f each v;
  m}
 
@@ -29,7 +27,7 @@ loadmovies:{
 .ml.inv:.qml.minv
 
 \cd /Users/nick/Downloads/machine-learning-ex8/ex8
-plt:.plot.plot[39;20;1_.plot.c16]
+plt:.util.plot[39;20;.util.c16]
 X:(2#"F";",")0:`:ex8data1.csv
 Xval:(2#"F";",")0:`Xval1.csv
 yval:first (1#"F";",")0:`yval1.csv
@@ -41,7 +39,7 @@ plt X,enlist p
 pval:.ml.gaussmv[mu;s2] Xval
 / plot relationship between cutoff and F1
 f:.ml.F1 .ml.tptnfpfn[yval]pval<
-plt (e;f each e:nrng[1000;min pval;max pval])
+plt (e;f each e:.util.nrng[1000;min pval;max pval])
 / find optimal cutoff
 f 0N!e:.qml.min[1f%f@;med pval]
 / plot outliers
@@ -57,7 +55,7 @@ p:.ml.gaussmv[mu;s2] X
 pval:.ml.gaussmv[mu;s2] Xval
 / plot relationship between cutoff and F1
 f:.ml.F1 .ml.tptnfpfn[yval]pval<
-plt (e;f each e:nrng[1000;min pval;max pval])
+plt (e;f each e:.util.nrng[1000;min pval;max pval])
 / find optimal cutoff
 f 0N!e:.qml.min[1f%f@;med pval]
 f 0N!e:maxf[f;1000;yval;pval]
@@ -72,8 +70,8 @@ loadmovies[]             / X, Y, THETA
 avg Y 0                  / average rating for first movie (toy story):
 
 / visualize dataset
-plt:.plot.plot[79;40;.plot.c10]
--1 value reverse plt .plot.hmap Y;
+plt:.util.plot[80;40;.util.c10]
+-1 value reverse plt .util.hmap Y;
 
 / reduce the data set size so that this runs faster
 n:(nu:4;nf:3)                   / n users, n movies, n features

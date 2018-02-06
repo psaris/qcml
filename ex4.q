@@ -1,8 +1,8 @@
-\l /Users/nick/q/funq/plot.q
+\l /Users/nick/q/funq/util.q
 \l /Users/nick/q/funq/ml.q
-\l /Users/nick/q/funq/fmincg.q
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
+\l /Users/nick/q/funq/fmincg.q
 
 \
 .ml.checknngradients[.1f;3 5 3]
@@ -34,7 +34,7 @@ THETA:first .fmincg.fmincg[50;.ml.nncostgrad[0f;n;X;YMAT];THETA]
 
 100*avg y=p:1+.ml.predictonevsall[X].ml.nncut[n] THETA
 / visualize hidden features
-plt:.plot.plot[39;20;.plot.c16] .plot.hmap 20 cut
+plt:.util.plot[40;10;.util.c16] .util.hmap 20 cut
 plt 1_first THETA1
 
 / mistakes
