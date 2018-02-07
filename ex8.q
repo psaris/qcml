@@ -20,12 +20,7 @@ loadmovies:{
  `THETA set (10#"F";",")0:`:Theta.csv;
  }
 
-
-.ml.mm:.qml.mm
-.ml.mmt:.qml.mmx[`rflip]
-.ml.mtm:.qml.mmx[`lflip]
-.ml.inv:.qml.minv
-
+\
 \cd /Users/nick/Downloads/machine-learning-ex8/ex8
 plt:.util.plot[39;20;.util.c16]
 X:(2#"F";",")0:`:ex8data1.csv
