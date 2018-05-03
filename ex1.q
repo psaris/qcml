@@ -17,10 +17,10 @@ alpha:.001                      / learning rate
 .util.plt .ml.lincost[X;Y] each 20 .ml.gd[alpha;.ml.lingrad[X;Y]]\THETA
 .ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA] / obtain optimal theta
 / plot prediction of optimal theta
-.util.plt X,.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA]$.ml.addint X
-flip .qml.mlsq[flip .ml.addint X;flip Y] / qml least squares
-.ml.mlsq[Y;.ml.addint X]                 / normal equations
-Y lsq .ml.addint X                       / q least squares
+.util.plt X,.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA]$.ml.prepend[1f] X
+flip .qml.mlsq[flip .ml.prepend[1f] X;flip Y] / qml least squares
+.ml.mlsq[Y;.ml.prepend[1f] X]                 / normal equations
+Y lsq .ml.prepend[1f] X                       / q least squares
 
 data:("FFF";",")0:`ex1data2.txt
 .util.plt 2#data
@@ -31,7 +31,7 @@ alpha:.01
 THETA:(1;1+count X)#0f
 4000 .ml.gd[alpha;.ml.lingrad[X;Y]]/ THETA
 
-flip .qml.mlsq[flip .ml.addint X;flip Y] / qml least squares
-.qml.mlsqx[`flip;.ml.addint X;Y]         / flipped
-.ml.mlsq[Y;.ml.addint X]                 / normal equations
-Y lsq .ml.addint X                       / q least squares
+flip .qml.mlsq[flip .ml.prepend[1f] X;flip Y] / qml least squares
+.qml.mlsqx[`flip;.ml.prepend[1f] X;Y]         / flipped
+.ml.mlsq[Y;.ml.prepend[1f] X]                 / normal equations
+Y lsq .ml.prepend[1f] X                       / q least squares
