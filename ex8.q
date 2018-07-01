@@ -20,7 +20,6 @@ loadmovies:{
  `THETA set (10#"F";",")0:`:Theta.csv;
  }
 
-\
 \cd /Users/nick/Downloads/machine-learning-ex8/ex8
 plt:.util.plot[39;20;.util.c16]
 X:(2#"F";",")0:`:ex8data1.csv
@@ -55,7 +54,7 @@ plt (e;f each e:.util.nrng[1000;min pval;max pval])
 f 0N!e:.qml.min[1f%f@;med pval]
 f 0N!e:maxf[f;1000;yval;pval]
 / count outliers
-117i~sum p<e
+.util.assert[117i] sum p<e
 / plot outliers
 plt X[8+0 1],enlist p<e
 
@@ -69,14 +68,14 @@ plt:.util.plot[80;40;.util.c10]
 -1 value reverse plt .util.hmap Y;
 
 / reduce the data set size so that this runs faster
-n:(nu:4;nf:3)                   / n users, n movies, n features
+n:(nu:4;nf:3);nm:5              / n users, n features, n movies
 THETA:THETA[til nf;til nu]
 X:X[til nf;til nm]
 Y:Y[til nu;til nm]
-22.224603725685668~.ml.rcfcost[0;Y;THETA;X]
-31.344056244274213~.ml.rcfcost[1.5;Y;THETA;X]
+.util.assert[22.224603725685668] .ml.rcfcost[0;Y;THETA;X]
+.util.assert[31.344056244274213] .ml.rcfcost[1.5;Y;THETA;X]
 
-(THETA;X) ~ .ml.cfcut[n] thetax:2 raze/ (THETA;X)
+.util.assert[(THETA;X)] .ml.cfcut[n] thetax:2 raze/ (THETA;X)
 
 .ml.checkcfgradients[0f;n]
 .ml.checkcfgradients[1.5;n]
@@ -102,4 +101,4 @@ mp:last[p]+a                      / add bias and save my predictions
 show `score xdesc ([]movie:m;rating:r;score:mp) / display sorted predictions
 
 show m idesc each THETAX[1]+\:a
-show m idesc each THETAX[1]+\:a
+show m iasc each THETAX[1]+\:a

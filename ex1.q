@@ -3,7 +3,6 @@
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
 
-\
 \c 100 100
 \cd /Users/nick/Downloads/machine-learning-ex1/ex1
 data:("FF";",")0:`:ex1data1.txt
@@ -12,7 +11,7 @@ X:1#data
 Y:-1#data
 THETA:(1;1+count X)#0f          / initial guess
 alpha:.001                      / learning rate
-32.072733877455654 ~ .ml.lincost[X;Y;THETA]   / least squares cost
+.util.assert[32.072733877455654] .ml.lincost[X;Y;THETA]   / least squares cost
 / plot cost function of each gd step
 .util.plt .ml.lincost[X;Y] each 20 .ml.gd[alpha;.ml.lingrad[X;Y]]\THETA
 .ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA] / obtain optimal theta

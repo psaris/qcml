@@ -3,7 +3,6 @@
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
 
-\
 \c 50 100
 -1 value .util.plt .ml.sigmoid .1*-50+til 100; / plot sigmoid function
 \cd /Users/nick/Downloads/machine-learning-ex2/ex2

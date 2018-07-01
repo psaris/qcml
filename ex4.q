@@ -4,7 +4,6 @@
 \l /Users/nick/q/funq/qmlmm.q
 \l /Users/nick/q/funq/fmincg.q
 
-\
 .ml.checknngradients[.1f;3 5 3]
 
 \cd /Users/nick/Downloads/machine-learning-ex4/ex4
@@ -15,10 +14,10 @@ THETA2:flip (26#"F";",") 0:`:THETA2.csv
 
 .ml.predict/[X;(THETA1;THETA2)]
 YMAT:.ml.diag[10#1f]@\:"i"$y-1
-0.28762916516131876 = .ml.rlogcost[0f;X;YMAT] (THETA1;THETA2)
-0.38376985909092381 = .ml.rlogcost[1f;X;YMAT] (THETA1;THETA2)
-0.026047433852894011 = sum 2 raze/ .ml.rloggrad[0f;X;YMAT] (THETA1;THETA2)
-0.0099559365856808548 = sum 2 raze/ .ml.rloggrad[1f;X;YMAT] (THETA1;THETA2)
+.util.assert[0.28762916516131876] .ml.rlogcost[0f;X;YMAT] (THETA1;THETA2)
+.util.assert[0.38376985909092381] .ml.rlogcost[1f;X;YMAT] (THETA1;THETA2)
+.util.assert[0.026047433852894011] sum 2 raze/ .ml.rloggrad[0f;X;YMAT] (THETA1;THETA2)
+.util.assert[0.0099559365856808548] sum 2 raze/ .ml.rloggrad[1f;X;YMAT] (THETA1;THETA2)
 
 n:400 25 10
 YMAT:.ml.diag[last[n]#1f]@\:"i"$y-1

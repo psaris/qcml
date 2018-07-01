@@ -3,7 +3,6 @@
 \l /Users/nick/q/qml/src/qml.q
 \l /Users/nick/q/funq/qmlmm.q
 
-\
 \cd /Users/nick/Downloads/machine-learning-ex7/ex7
 plt:.util.plot[50;20;.util.c16]
 X:(2#"F";",")0:`:ex7data2.csv
@@ -11,7 +10,7 @@ plt X
 C:flip (3 3;6 2;8 5)
 
 / closest centroids
-(0 2 1!1#'0 1 2)~.ml.cgroup[.ml.edist;3#'X;C]
+.util.assert[(0 2 1!1#'0 1 2)] .ml.cgroup[.ml.edist;3#'X;C]
 / new centroids
 .ml.kmeans[X;C]
 
@@ -22,10 +21,10 @@ C:flip (3 3;6 2;8 5)
 / 128*128*24 = 393,216
 X:(3#"F";",")0:`:bird_small.csv
 
-show .util.plot[128;64;.util.c68] .util.hmap 128 cut .util.grayscale X
+-1 value .util.plot[128;64;.util.c68] .util.hmap 128 cut .util.grayscale X;
 
 / map to 4 bits
-C:10 .ml.kmeans[X]/16
+C:10 .ml.kmeans[X]/-16?/:X
 / compress information
 / 16*24+128*128*4 = 65,920
 g:.ml.cgroup[.ml.edist;X;C]
@@ -35,7 +34,7 @@ g:.ml.cgroup[.ml.edist;X;C]
 /\ts:10 C@\:last each asc raze value[g](,\:)'key g
 
 / plot reconstructed image
-show .util.plot[128;64;.util.c16] .util.hmap 128 cut .util.grayscale Xr;
+-1 value .util.plot[128;64;.util.c16] .util.hmap 128 cut .util.grayscale Xr;
 
 X:("FF";",") 0:`:ex7_pca.csv
 -1 value plt X;

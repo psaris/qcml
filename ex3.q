@@ -4,7 +4,6 @@
 \l /Users/nick/q/funq/qmlmm.q
 \l /Users/nick/q/funq/fmincg.q
 
-\
 \cd /Users/nick/Downloads/machine-learning-ex3/ex3
 X:(400#"F";",")0:`:ex3data1.csv / 5000 20x20 bitmaps
 y:first Y:(1#"F";",")0:`:ex3data2.csv  / integers 1-10 (10=0)
