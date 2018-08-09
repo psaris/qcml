@@ -7,7 +7,7 @@
 -1 value .util.plt .ml.sigmoid .1*-50+til 100; / plot sigmoid function
 \cd /Users/nick/Downloads/machine-learning-ex2/ex2
 data:("FFF";",")0:`:ex2data1.txt
-.util.plt data
+show .util.plt data
 X:2#data
 Y:-1#data
 THETA:(1;1+count X)#0f
@@ -24,6 +24,6 @@ THETA:(1;1+count X)#0f
 
 / compare plots
 THETA:.qml.minx[opts;.ml.logcost[X;Y];THETA]
-.util.plt data
-.util.plt X,.ml.lpredict[X] THETA
+show .util.plt data
+show .util.plt X,.ml.lpredict[X] THETA
 

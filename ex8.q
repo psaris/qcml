@@ -27,10 +27,10 @@ Xval:(2#"F";",")0:`Xval1.csv
 yval:first (1#"F";",")0:`yval1.csv
 plt X
 mu:avg each X
-s2:var each X
-p:.ml.gaussmv[mu;s2] X
+sigma:var each X
+p:.ml.gaussmvl[mu;sigma] X
 plt X,enlist p
-pval:.ml.gaussmv[mu;s2] Xval
+pval:.ml.gaussmvl[mu;sigma] Xval
 / plot relationship between cutoff and F1
 f:.ml.F1 .ml.tptnfpfn[yval]pval<
 plt (e;f each e:.util.nrng[1000;min pval;max pval])
@@ -44,9 +44,9 @@ X:(11#"F";",")0:`:ex8data2.csv
 Xval:(11#"F";",")0:`Xval2.csv
 yval:first (1#"F";",")0:`yval2.csv
 mu:avg each X
-s2:var each X
-p:.ml.gaussmv[mu;s2] X
-pval:.ml.gaussmv[mu;s2] Xval
+sigma:var each X
+p:.ml.gaussmvl[mu;sigma] X
+pval:.ml.gaussmvl[mu;sigma] Xval
 / plot relationship between cutoff and F1
 f:.ml.F1 .ml.tptnfpfn[yval]pval<
 plt (e;f each e:.util.nrng[1000;min pval;max pval])

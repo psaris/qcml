@@ -33,8 +33,8 @@ THETA:first .fmincg.fmincg[50;.ml.nncostgrad[0f;n;X;YMAT];THETA]
 
 100*avg y=p:1+.ml.predictonevsall[X].ml.nncut[n] THETA
 / visualize hidden features
-plt:.util.plot[40;10;.util.c16] .util.hmap 20 cut
-plt 1_first THETA1
+plt:.util.plot[20;10;.util.c16] .util.hmap 20 cut
+show plt 1_first THETA1
 
 / mistakes
 \c 100 200
