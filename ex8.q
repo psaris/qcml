@@ -32,7 +32,7 @@ p:.ml.gaussmvl[mu;sigma] X
 plt X,enlist p
 pval:.ml.gaussmvl[mu;sigma] Xval
 / plot relationship between cutoff and F1
-f:.ml.F1 .ml.tptnfpfn[yval]pval<
+f:.ml.F1 . .ml.tptnfpfn[yval]pval<
 plt (e;f each e:.util.nrng[1000;min pval;max pval])
 / find optimal cutoff
 f 0N!e:.qml.min[1f%f@;med pval]
@@ -48,7 +48,7 @@ sigma:var each X
 p:.ml.gaussmvl[mu;sigma] X
 pval:.ml.gaussmvl[mu;sigma] Xval
 / plot relationship between cutoff and F1
-f:.ml.F1 .ml.tptnfpfn[yval]pval<
+f:.ml.F1 . .ml.tptnfpfn[yval]pval<
 plt (e;f each e:.util.nrng[1000;min pval;max pval])
 / find optimal cutoff
 f 0N!e:.qml.min[1f%f@;med pval]
