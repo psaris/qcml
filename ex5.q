@@ -1,6 +1,4 @@
-\l funq/util.q
-\l funq/ml.q
-\l funq/fmincg.q
+\l funq.q
 
 plt:.util.plot[23;12;.util.c16]
 -1 "loading data set";

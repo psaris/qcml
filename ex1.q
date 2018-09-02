@@ -1,7 +1,4 @@
-\l funq/util.q
-\l funq/ml.q
-\l qml.q
-\l funq/qmlmm.q
+\l funq.q
 
 \c 100 100
 -1 "loading data set 1";

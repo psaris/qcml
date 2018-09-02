@@ -1,7 +1,4 @@
-\l funq/util.q
-\l funq/ml.q
-\l qml.q
-\l funq/fmincg.q
+\l funq.q
 
 -1 "loading data set";
 X:(400#"F";",")0:`:ex3dataX.txt / 5000 20x20 bitmaps

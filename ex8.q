@@ -1,8 +1,4 @@
-\l funq/util.q
-\l funq/ml.q
-\l qml.q
-\l funq/qmlmm.q
-\l funq/fmincg.q
+\l funq.q
 
 \c 30 100
 

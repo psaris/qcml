@@ -1,6 +1,4 @@
-\l funq/util.q
-\l funq/ml.q
-\l funq/fmincg.q
+\l funq.q
 
 -1 "using random values to check neural network gradient calculation";
 .ml.checknngradients[.1f;3 5 3]
