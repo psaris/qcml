@@ -1,0 +1,3 @@
+[submodule "funq"]
+	path = funq
+	url = https://github.com/psaris/funq

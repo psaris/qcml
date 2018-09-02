@@ -1,36 +1,48 @@
-\l /Users/nick/q/funq/util.q
-\l /Users/nick/q/funq/ml.q
-\l /Users/nick/q/qml/src/qml.q
-\l /Users/nick/q/funq/qmlmm.q
+\l funq/util.q
+\l funq/ml.q
+\l qml.q
+\l funq/qmlmm.q
 
 \c 100 100
-\cd /Users/nick/Downloads/machine-learning-ex1/ex1
+-1 "loading data set 1";
 data:("FF";",")0:`:ex1data1.txt
 show .util.plt data
 X:1#data
 Y:-1#data
 THETA:(1;1+count X)#0f          / initial guess
 alpha:.001                      / learning rate
-.util.assert[32.072733877455654] .ml.lincost[X;Y;THETA]   / least squares cost
-/ plot cost function of each gd step
+-1 "confirming accurate least squares cost";
+.util.assert[32.072733877455654] .ml.lincost[X;Y;THETA]
+-1 "plot cost function of each gd step";
 show .util.plt .ml.lincost[X;Y] each 20 .ml.gd[alpha;.ml.lingrad[X;Y]]\THETA
-.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA] / obtain optimal theta
-/ plot prediction of optimal theta
+-1 "obtain optimal theta";
+.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA]
+-1 "plot prediction of optimal theta";
 show .util.plt X,.ml.gd[alpha;.ml.lingrad[X;Y]]/[THETA]$.ml.prepend[1f] X
-flip .qml.mlsq[flip .ml.prepend[1f] X;flip Y] / qml least squares
-.ml.mlsq[Y;.ml.prepend[1f] X]                 / normal equations
-Y lsq .ml.prepend[1f] X                       / q least squares
+-1 "qml least squares";
+flip .qml.mlsq[flip .ml.prepend[1f] X;flip Y]
+-1 "normal equations";
+.ml.mlsq[Y;.ml.prepend[1f] X]
+-1 "q least squares";
+Y lsq .ml.prepend[1f] X
 
-data:("FFF";",")0:`ex1data2.txt
-show .util.plt 2#data
-X:data 0 1
-X:.ml.zscore each X             / normalize and
+-1 "loading data set 2";
+data:("FFF";",")0:`:ex1data2.txt
+show .util.plt data
+X:2#data
+-1 "normalizing (zscoring) data";
+X:.ml.zscore each X
 Y:-1#data
 alpha:.01
 THETA:(1;1+count X)#0f
+-1 "performing gradient descent";
 4000 .ml.gd[alpha;.ml.lingrad[X;Y]]/ THETA
 
-flip .qml.mlsq[flip .ml.prepend[1f] X;flip Y] / qml least squares
-.qml.mlsqx[`flip;.ml.prepend[1f] X;Y]         / flipped
-.ml.mlsq[Y;.ml.prepend[1f] X]                 / normal equations
-Y lsq .ml.prepend[1f] X                       / q least squares
+-1 "comparing with qml least squares";
+flip .qml.mlsq[flip .ml.prepend[1f] X;flip Y]
+-1 "comparing with unflipped version";
+.qml.mlsqx[`flip;.ml.prepend[1f] X;Y]
+-1 "comparing with normal equations";
+.ml.mlsq[Y;.ml.prepend[1f] X]
+-1 "comparing with q least squares";
+Y lsq .ml.prepend[1f] X
