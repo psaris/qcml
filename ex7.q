@@ -30,8 +30,7 @@ C:10 .ml.kmeans[X]/-16?/:X
 g:.ml.cgroup[.ml.edist;X;C]
 
 -1 "recovering original image by ungrouping";
-10 Xr:C@\:{x[0] iasc x 1} flip raze flip each flip (key g;value g)
-/10 C@\:last each asc raze value[g](,\:)'key g
+Xr:C@\:.ml.ugrp g
 
 -1 "plotting reconstructed image";
 -1 value .util.plot[128;64;.util.c16] .util.hmap 128 cut .util.grayscale Xr;
