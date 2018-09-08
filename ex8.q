@@ -107,7 +107,7 @@ n:(nu;nf);
 thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
 
 -1 "computing avg rating per movie";
-a:.ml.f2nd[avg] Y
+a:.ml.navg Y
 -1 "learning theta and x values from demeaned data";
 thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[1f;Y-\:a;n];thetax]
 -1 "predicting ratings";
