@@ -79,8 +79,8 @@ THETA:THETA[til nf;til nu]
 X:X[til nf;til nm]
 Y:Y[til nu;til nm]
 -1 "confirming regularized collaborative filtering cost";
-.util.assert[22.224603725685668] .ml.rcfcost[0;Y;THETA;X]
-.util.assert[31.344056244274213] .ml.rcfcost[1.5;Y;THETA;X]
+.util.assert[22.224603725685668] count[Y 0]*.ml.rcfcost[0;Y;THETA;X]
+.util.assert[31.344056244274213] count[Y 0]*.ml.rcfcost[1.5;Y;THETA;X]
 
 .util.assert[(THETA;X)] .ml.cfcut[n] thetax:2 raze/ (THETA;X)
 
