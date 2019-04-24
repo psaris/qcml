@@ -18,11 +18,11 @@ THETA:(1;1+count X)#0f
 opts:`quiet`rk`iter,7000
 THETA:(1;1+count X)#0f
 -1 "finding function minimum";
-.qml.minx[opts;.ml.logcost[X;Y];THETA]
+.qml.minx[opts;.ml.logcost[X;Y]enlist::;THETA]
 -1 "use gradient to improve efficiency";
 .qml.minx[opts;.ml.logcostgradf[X;Y];THETA]
 
-THETA:.qml.minx[opts;.ml.logcost[X;Y];THETA]
+THETA:.qml.minx[opts;.ml.logcost[X;Y]enlist::;THETA]
 -1 "compring plots";
 -1 "raw data";
 show .util.plt data

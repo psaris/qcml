@@ -13,15 +13,16 @@ THETA2:flip (26#"F";",") 0:`:ex4theta2.txt
 .ml.predict/[X;(THETA1;THETA2)]
 YMAT:.ml.diag[10#1f]@\:"i"$y-1
 -1 "confirming logistic cost calculations with and without regularization";
-.util.assert[0.28762916516131876] .ml.rlogcost[0f;X;YMAT] (THETA1;THETA2)
-.util.assert[0.38376985909092381] .ml.rlogcost[1f;X;YMAT] (THETA1;THETA2)
-.util.assert[0.026047433852894011] sum 2 raze/ .ml.rloggrad[0f;X;YMAT] (THETA1;THETA2)
-.util.assert[0.0099559365856808548] sum 2 raze/ .ml.rloggrad[1f;X;YMAT] (THETA1;THETA2)
-
 n:400 25 10
+theta:2 raze/ (THETA1;THETA2)
+.util.assert[0.28762916516131876] first .ml.nncostgrad[0f;n;X;YMAT] theta
+.util.assert[0.38376985909092381] first .ml.nncostgrad[1f;n;X;YMAT] theta
+.util.assert[0.026047433852894011] sum last .ml.nncostgrad[0f;n;X;YMAT] theta
+.util.assert[0.0099559365856808548] sum last .ml.nncostgrad[1f;n;X;YMAT] theta
+
 YMAT:.ml.diag[last[n]#1f]@\:"i"$y-1
 -1 "computing the sum of each gradient";
-sum each sum each g:.ml.nncut[n] last .ml.nncostgrad[1f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
+sum each sum each g:.ml.nncut[n] last .ml.nncostgrad[1f;n;X;YMAT;theta]
 
 THETA:2 raze/ .ml.ninit'[-1_n;1_n];
 -1 "optimizing THETA";
