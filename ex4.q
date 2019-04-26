@@ -24,15 +24,14 @@ YMAT:.ml.diag[last[n]#1f]@\:"i"$y-1
 -1 "computing the sum of each gradient";
 sum each sum each g:.ml.nncut[n] last .ml.nncostgrad[1f;n;X;YMAT;theta]
 
-THETA:2 raze/ .ml.ninit'[-1_n;1_n];
+THETA:2 raze/ .ml.glorotu'[1_n;1+-1_n];
 -1 "optimizing THETA";
 .fmincg.fmincg[50;.ml.nncostgrad[0f;n;X;YMAT];THETA]
 -1 "computing the cost and gradient of given THETA values";
 .ml.nncostgrad[0f;n;X;YMAT;2 raze/ (THETA1;THETA2)]
 
 -1 "re-initializing THETA";
-THETA:2 raze/ .ml.ninit'[-1_n;1_n];
-THETA:2 raze/ (THETA1;THETA2)
+THETA:2 raze/ .ml.glorotu'[1_n;1+-1_n];
 -1 "optimizing THETA";
 THETA:first .fmincg.fmincg[50;.ml.nncostgrad[0f;n;X;YMAT];THETA]
 
