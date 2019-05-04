@@ -79,8 +79,8 @@ THETA:THETA[til nf;til nu]
 X:X[til nf;til nm]
 Y:Y[til nu;til nm]
 -1 "confirming regularized collaborative filtering cost";
-.util.assert[22.224603725685668] count[Y 0]*.ml.rcfcost[0;Y;THETA;X]
-.util.assert[31.344056244274213] count[Y 0]*.ml.rcfcost[1.5;Y;THETA;X]
+.util.assert[22.224603725685668] count[Y 0]*.ml.rcfcost[0f;0f;Y;THETA;X]
+.util.assert[31.344056244274213] count[Y 0]*.ml.rcfcost[0f;1.5;Y;THETA;X]
 
 .util.assert[(THETA;X)] .ml.cfcut[n] thetax:2 raze/ (THETA;X)
 
@@ -90,7 +90,7 @@ Y:Y[til nu;til nm]
 
 -1 "showing gradients";
 show each .ml.rcfgrad[1.5;Y;THETA;X]
-show each  .ml.cfcut[n] last .ml.rcfcostgrad[1.5;Y;n;2 raze/ (THETA;X)]
+show each  .ml.cfcut[n] last .ml.rcfcostgrad[0f;1.5;Y;n;2 raze/ (THETA;X)]
 -1 "loading movie names";
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 -1 "creating my own ratings";
@@ -109,7 +109,7 @@ thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
 -1 "computing avg rating per movie";
 a:.ml.navg Y
 -1 "learning theta and x values from demeaned data";
-thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[1f;Y-\:a;n];thetax]
+thetax:first .fmincg.fmincg[100;.ml.rcfcostgrad[0f;1f;Y-\:a;n];thetax]
 -1 "predicting ratings";
 p:.ml.mtm . THETAX: .ml.cfcut[n] thetax
 -1 "adding mean back to predictions and store my predictions";
