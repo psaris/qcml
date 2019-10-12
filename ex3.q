@@ -4,7 +4,7 @@
 X:(400#"F";",")0:`:ex3dataX.txt / 5000 20x20 bitmaps
 y:first Y:(1#"F";",")0:`:ex3datay.txt  / integers 1-10 (10=0)
 
-plt:.util.plot[20;10;.util.c16] .util.hmap 20 cut
+plt:.util.plot[20;10;.util.c16;avg] .util.hmap 20 cut
 -1 "plotting 4 random bitmaps";
 -1 value (,') over  plt each flip X[;-4?til count X 0];
 

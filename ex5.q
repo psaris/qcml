@@ -1,6 +1,6 @@
 \l funq.q
 
-plt:.util.plot[23;12;.util.c16]
+plt:.util.plot[23;12;.util.c16;avg]
 -1 "loading data set";
 data:(2#"F";",")0:`:ex5data1.txt
 -1 "plotting data";

@@ -1,6 +1,6 @@
 \l funq.q
 
-plt:.util.plot[50;20;.util.c16]
+plt:.util.plot[50;20;.util.c16;avg]
 -1 "loading data set 1";
 X:(2#"F";",")0:`:ex6data1X.txt
 y:first Y:(1#"F";",")0:`:ex6data1y.txt

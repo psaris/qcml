@@ -1,6 +1,6 @@
 \l funq.q
 
-plt:.util.plot[50;20;.util.c16]
+plt:.util.plot[50;20;.util.c16;avg]
 -1 "loading data set";
 X:(2#"F";",")0:`:ex7data2.txt
 -1 "plotting data set";
@@ -8,7 +8,7 @@ plt X
 C:flip (3 3;6 2;8 5)
 
 -1 "confirming closest centroids";
-.util.assert[(0 2 1!1#'0 1 2)] .ml.cgroup[.ml.edist;3#'X;C]
+.util.assert[1#'0 1 2] .ml.cgroup[.ml.edist;3#'X;C]
 -1 "new centroids after one iteration of k-means";
 .ml.kmeans[X;C]
 
@@ -21,7 +21,7 @@ C:flip (3 3;6 2;8 5)
 X:(3#"F";",")0:`:bird_small.txt
 
 -1 "converting to grayscale and plotting";
--1 value .util.plot[128;64;.util.c68] .util.hmap 128 cut .util.grayscale X;
+-1 value .util.plot[128;64;.util.c68;avg] .util.hmap 128 cut .util.grayscale X;
 
 -1 "mapping each color to 4 bits";
 C:10 .ml.kmeans[X]/-16?/:X
@@ -33,7 +33,7 @@ g:.ml.cgroup[.ml.edist;X;C]
 Xr:C@\:.ml.ugrp g
 
 -1 "plotting reconstructed image";
--1 value .util.plot[128;64;.util.c16] .util.hmap 128 cut .util.grayscale Xr;
+-1 value .util.plot[128;64;.util.c16;avg] .util.hmap 128 cut .util.grayscale Xr;
 
 -1 "loading pca data set";
 X:("FF";",") 0:`:ex7_pca.txt
@@ -45,7 +45,7 @@ X:("FF";",") 0:`:ex7_pca.txt
 -1 "loading faces data";
 X:(1024#"F";",") 0:`:ex7faces.txt
 \c 50 200
-plt:.util.plot[32;16;.util.c10] .util.hmap 32 cut
+plt:.util.plot[32;16;.util.c10;avg] .util.hmap 32 cut
 -1 "visualing faces";
 -1 value plt X[;i:rand 5000];
 -1 value plt X[;i];

@@ -20,7 +20,7 @@ loadmovies:{
  `THETA set (10#"F";",")0:`:ex8_theta.txt;
  }
 
-plt:.util.plot[39;20;.util.c16]
+plt:.util.plot[39;20;.util.c16;avg]
 -1 "loading data set";
 X:(2#"F";",")0:`:ex8data1.txt
 -1 "loading validation data set";
@@ -36,7 +36,7 @@ plt X,enlist p
 pval:.ml.gaussmvl[mu;sigma] Xval
 -1 "plot relationship between cutoff and F1";
 f:.ml.F1 . .ml.tptnfpfn[yval]pval<
-plt (e;f each e:.util.nrng[1000;min pval;max pval])
+plt (e;f each e:1_.util.nrng[1000;min pval;max pval])
 -1 "finding optimal cutoff";
 f 0N!e:.qml.min[1f%f@;med pval]
 -1 "plotting outliers";
@@ -54,7 +54,7 @@ p:.ml.gaussmvl[mu;sigma] X
 pval:.ml.gaussmvl[mu;sigma] Xval
 -1 "plot relationship between cutoff and F1";
 f:.ml.F1 . .ml.tptnfpfn[yval]pval<
-plt (e;f each e:.util.nrng[1000;min pval;max pval])
+plt (e;f each e:1_.util.nrng[1000;min pval;max pval])
 -1 "finding optimal cutoff";
 f 0N!e:.qml.min[1f%f@;med pval]
 f 0N!e:maxf[f;1000;yval;pval]
@@ -69,7 +69,7 @@ loadmovies[]             / X, Y, THETA
 -1 "average rating for first movie (toy story):";
 avg Y 0      
 
-plt:.util.plot[80;40;.util.c10]
+plt:.util.plot[80;40;.util.c10;avg]
 -1  "visualizing dataset";
 -1 value reverse plt .util.hmap Y;
 
