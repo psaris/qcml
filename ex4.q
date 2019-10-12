@@ -2,7 +2,7 @@
 
 -1 "using random values to check neural network gradient calculation";
 hgflf:`.ml.sigmoid`.ml.dsigmoid`.ml.sigmoid`.ml.logloss
-.ml.checknngradients[0;.1f;3 5 3;hgflf]
+.util.assert . .util.rnd[1e-6] .ml.checknngrad[1e-4;0;.1f;3 5 3;hgflf]
 
 -1 "loading data set";
 X:(400#"F";",")0:`:ex4dataX.txt

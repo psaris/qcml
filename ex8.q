@@ -85,8 +85,7 @@ Y:Y[til nu;til nm]
 .util.assert[(THETA;X)] .ml.cfcut[n] thetax:2 raze/ (THETA;X)
 
 -1 "checking collaborative filtering gradient computation";
-.ml.checkcfgradients[0f;n]
-.ml.checkcfgradients[1.5;n]
+.util.assert . .util.rnd[1e-6] .ml.checkcfgrad[1e-4;0;1.5;n]
 
 -1 "showing gradients";
 show each .ml.rcfgrad[1.5;Y;THETA;X]
