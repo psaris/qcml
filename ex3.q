@@ -23,10 +23,10 @@ cgf:.ml.rlogcostgrad[0;lambda2;X] / cost gradient function
 / cgf:.ml.rlogcostgradf[lambda;X]
 
 -1 "train one set of parameters for each number";
-THETA:.ml.onevsall[mf;cgf;Y;lbls]
-100*avg y=lbls .ml.predictonevsall[X] enlist THETA / what percent did we get correct?
+THETA:.ml.fitova[mf;cgf;Y;lbls]
+100*avg y=lbls .ml.clfova[X] enlist THETA / what percent did we get correct?
 -1 "showing a few mistakes";
-w:-4?where not y=p:lbls .ml.predictonevsall[X] enlist THETA / what percent did we get correct?
+w:-4?where not y=p:lbls .ml.clfova[X] enlist THETA / what percent did we get correct?
 -1 value (,') over plt each flip X[;w];
 show flip([]p;y) w
 
