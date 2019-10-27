@@ -9,14 +9,14 @@ plt:.util.plot[20;10;.util.c16;avg] .util.hmap 20 cut
 -1 value (,') over  plt each flip X[;-4?til count X 0];
 
 lbls:"f"$1+til 10
-lambda2:1
+rf:.ml.l2[1]
 THETA:(1;1+count X)#0f
 
 / two ways to compute THETA (fmincg;.qml.minx)
 
 -1 "using fmincg";
 mf:(first .fmincg.fmincg[20;;THETA 0]::) / pass min func projection as parameter
-cgf:.ml.rlogcostgrad[0;lambda2;X] / cost gradient function
+cgf:.ml.logcostgrad[rf;X] / cost gradient function
 
 / -1 "using .qml.minx";
 / mf:{first .qml.minx[`quiet`full`iter,20;x;THETA]`last}
