@@ -89,7 +89,7 @@ Y:Y[til nu;til nm]
 
 -1 "showing gradients";
 show each .ml.cfgrad[.ml.l2[1.5];Y;THETA;X]
-show each  .ml.cfcut[n] last .ml.cfcostgrad[.ml.l2[1.5];Y;n;2 raze/ (THETA;X)]
+show each  .ml.cfcut[n] last .ml.cfcostgrad[.ml.l2[1.5];n;Y;2 raze/ (THETA;X)]
 -1 "loading movie names";
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 -1 "creating my own ratings";
@@ -108,7 +108,7 @@ thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
 -1 "computing avg rating per movie";
 a:.ml.navg Y
 -1 "learning theta and x values from demeaned data";
-thetax:first .fmincg.fmincg[100;.ml.cfcostgrad[.ml.l2[1f];Y-\:a;n];thetax]
+thetax:first .fmincg.fmincg[100;.ml.cfcostgrad[.ml.l2[1f];n;Y-\:a];thetax]
 -1 "predicting ratings";
 p:.ml.mtm . THETAX: .ml.cfcut[n] thetax
 -1 "adding mean back to predictions and store my predictions";

@@ -10,19 +10,19 @@ X:2#data
 Y:-1#data
 THETA:(1;1+count X)#0f
 -1 "computing logistic regression cost";
-.ml.logcost[();X;Y;THETA]
+.ml.logcost[();Y;X;THETA]
 -1 "computing logistic regression gradient";
-.ml.loggrad[();X;Y;THETA]
+.ml.loggrad[();Y;X;THETA]
 
 / rk:runge–kutta, slp: success linear programming
 opts:`quiet`rk`iter,7000
 THETA:(1;1+count X)#0f
 -1 "finding function minimum";
-.qml.minx[opts;.ml.logcost[();X;Y]enlist::;THETA]
+.qml.minx[opts;.ml.logcost[();Y;X]enlist::;THETA]
 -1 "use gradient to improve efficiency";
-.qml.minx[opts;.ml.logcostgradf[();X;Y];THETA]
+.qml.minx[opts;.ml.logcostgradf[();Y;X];THETA]
 
-THETA:.qml.minx[opts;.ml.logcost[();X;Y]enlist::;THETA]
+THETA:.qml.minx[opts;.ml.logcost[();Y;X]enlist::;THETA]
 -1 "compring plots";
 -1 "raw data";
 show .util.plt data

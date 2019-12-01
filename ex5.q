@@ -10,5 +10,5 @@ Y:-1#data
 THETA:(1;1+count X)#1f
 
 -1 "confirming cost and gradient calculations";
-.util.assert[303.99319222026429] .ml.lincost[.ml.l2[1f];X;Y;THETA]
-.util.assert[-15.303015674201186 598.25074417270355] first .ml.lingrad[.ml.l2[1f];X;Y;THETA]
+.util.assert[303.99319222026429] .ml.lincost[.ml.l2[1f];Y;X;THETA]
+.util.assert[-15.303015674201186 598.25074417270355] first .ml.lingrad[.ml.l2[1f];Y;X;THETA]

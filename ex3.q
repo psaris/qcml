@@ -16,7 +16,7 @@ THETA:(1;1+count X)#0f
 
 -1 "using fmincg";
 mf:(first .fmincg.fmincg[20;;THETA 0]::) / pass min func projection as parameter
-cgf:.ml.logcostgrad[rf;X] / cost gradient function
+cgf:.ml.logcostgrad[rf;;X] / cost gradient function
 
 / -1 "using .qml.minx";
 / mf:{first .qml.minx[`quiet`full`iter,20;x;THETA]`last}
