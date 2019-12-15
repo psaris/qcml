@@ -45,16 +45,16 @@ X:("FF";",") 0:`:ex7_pca.txt
 -1 "loading faces data";
 X:(1024#"F";",") 0:`:ex7faces.txt
 \c 50 200
-plt:.util.plot[32;16;.util.c10;avg] .util.hmap 32 cut
+plt:value .util.plot[32;16;.util.c10;avg] .util.hmap 32 cut
 -1 "visualing faces";
--1 value plt X[;i:rand 5000];
--1 value plt X[;i];
--1 value (,') over plt each flip X[;-4?5000];
+-1 plt X[;i:rand 5000];
+-1 plt X[;i];
+-1 (,'/) plt each X@\:/:-4?5000;
 
 -1 "performing pca on z-scored data";
 v:.ml.pca Xn:.ml.zscore each X
 -1 "plotting first two pca faces";
--1 value (,') over plt each 2#v;
+-1 (,'/) plt each 2#v;
 -1 "recovering initial faces by using 100 components";
--1 value plt .ml.project[100#v;Xn][;0];
--1 value plt X[;0];
+-1 plt .ml.project[100#v;Xn][;0];
+-1 plt X[;0];

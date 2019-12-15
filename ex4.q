@@ -40,13 +40,13 @@ THETA:first .fmincg.fmincg[50;.ml.nncostgrad[();n;hgflf;Y;X];THETA]
 -1 "using one vs all to predict y";
 100*avg y=p:1+.ml.clfova[X].ml.nncut[n] THETA
 -1 "visualize hidden features";
-plt:.util.plot[20;10;.util.c16;avg] .util.hmap 20 cut
-show plt 1_first THETA1
+plt:value .util.plot[20;10;.util.c16;avg] .util.hmap 20 cut
+-1 plt 1_first THETA1;
 
 -1 "showing a few mistakes";
 \c 100 200
 w:-4?where not y=p:1f+.ml.clfova[X].ml.nncut[n] THETA
--1 value (,') over plt each flip X[;w];
+-1 (,'/) plt each  X@\:/:w;
 show flip([]p;y)w
 
 -1 "showing the confusion matrix";
