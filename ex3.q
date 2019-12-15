@@ -2,13 +2,13 @@
 
 -1 "loading data set";
 X:(400#"F";",")0:`:ex3dataX.txt / 5000 20x20 bitmaps
-y:first Y:(1#"F";",")0:`:ex3datay.txt  / integers 1-10 (10=0)
+y:first Y:(1#"H";",")0:`:ex3datay.txt  / integers 1-10 (10=0)
 
 plt:value .util.plot[20;10;.util.c16;avg] .util.hmap 20 cut
 -1 "plotting 4 random bitmaps";
 -1 (,'/) plt each X@\:/:-4?til count X 0;
 
-lbls:"f"$1+til 10
+lbls:"h"$1+til 10
 rf:.ml.l2[1]
 THETA:(1;1+count X)#0f
 
