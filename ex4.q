@@ -1,7 +1,7 @@
 \l funq.q
 
 -1 "using random values to check neural network gradient calculation";
-hgolf:`.ml.sigmoid`.ml.dsigmoid`.ml.sigmoid`.ml.logloss
+hgolf:`h`g`o`l!`.ml.sigmoid`.ml.dsigmoid`.ml.sigmoid`.ml.logloss
 rf:.ml.l2[.1]
 .util.assert . .util.rnd[1e-6] .ml.checknngrad[1e-4;rf;3 5 3;hgolf]
 
@@ -12,7 +12,7 @@ THETA1:flip (401#"F";",") 0:`:ex4theta1.txt
 THETA2:flip (26#"F";",") 0:`:ex4theta2.txt
 
 -1 "using loaded THETA values to predict y";
-.ml.nnpredict[hgolf 0 2;X] (THETA1;THETA2)
+.ml.nnpredict[hgolf;X] (THETA1;THETA2)
 Y:.ml.diag[10#1f]@\:"i"$y-1
 -1 "confirming logistic cost calculations with and without regularization";
 n:400 25 10
@@ -39,14 +39,14 @@ theta:2 raze/ .ml.glorotu'[1+-1_n;1_n];
 theta:first .fmincg.fmincg[50;.ml.nncostgrad[();n;hgolf;Y;X];theta]
 
 -1 "using one vs all to predict y";
-100*avg y=p:1+.ml.clfova .ml.nnpredict[hgolf 0 2;X] .ml.nncut[n] theta
+100*avg y=p:1+.ml.clfova .ml.nnpredict[hgolf;X] .ml.nncut[n] theta
 -1 "visualize hidden features";
 plt:value .util.plot[20;10;.util.c16;avg] .util.hmap 20 cut
 -1 plt 1_first THETA1;
 
 -1 "showing a few mistakes";
 \c 100 200
-w:-4?where not y=p:1f+.ml.clfova .ml.nnpredict[hgolf 0 2;X] .ml.nncut[n] theta
+w:-4?where not y=p:1f+.ml.clfova .ml.nnpredict[hgolf;X] .ml.nncut[n] theta
 -1 (,'/) plt each  X@\:/:w;
 show flip([]p;y)w
 
