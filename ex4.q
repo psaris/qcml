@@ -17,23 +17,20 @@ Y:.ml.diag[10#1f]@\:"i"$y-1
 -1 "confirming logistic cost calculations with and without regularization";
 n:400 25 10
 rf:.ml.l2[1f]
-theta:2 raze/ (THETA1;THETA2)
-.util.assert[0.28762916516131876] .ml.nncost[();n;hgolf;Y;X] theta
-.util.assert[0.38376985909092381] .ml.nncost[rf;n;hgolf;Y;X] theta
-.util.assert[0.026047433852894011] sum .ml.nngrad[();n;hgolf;Y;X] theta
-.util.assert[0.0099559365856808548] sum .ml.nngrad[rf;n;hgolf;Y;X] theta
+theta:2 raze/ THETA:(THETA1;THETA2)
+.util.assert[0.28762916516131876] .ml.nncost[();hgolf;Y;X] THETA
+.util.assert[0.38376985909092381] .ml.nncost[rf;hgolf;Y;X] THETA
+.util.assert[0.026047433852894011] sum 2 raze/ .ml.nngrad[();hgolf;Y;X] THETA
+.util.assert[0.0099559365856808548] sum 2 raze/ .ml.nngrad[rf;hgolf;Y;X] THETA
 
 Y:.ml.diag[last[n]#1f]@\:"i"$y-1
 -1 "computing the sum of each gradient";
-(sum sum::) each .ml.nncut[n] .ml.nngrad[rf;n;hgolf;Y;X;theta]
+sum 2 raze/ .ml.nngrad[rf;hgolf;Y;X;THETA]
 
-theta:2 raze/ .ml.glorotu'[1+-1_n;1_n];
--1 "optimizing THETA";
-.fmincg.fmincg[50;.ml.nncostgrad[();n;hgolf;Y;X];theta]
 -1 "computing the cost and gradient of given THETA values";
-.ml.nncostgrad[();n;hgolf;Y;X;2 raze/ (THETA1;THETA2)]
+.ml.nncostgrad[();n;hgolf;Y;X;theta]
 
--1 "re-initializing THETA";
+-1 "initializing theta";
 theta:2 raze/ .ml.glorotu'[1+-1_n;1_n];
 -1 "optimizing THETA";
 theta:first .fmincg.fmincg[50;.ml.nncostgrad[();n;hgolf;Y;X];theta]

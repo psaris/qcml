@@ -16,7 +16,7 @@ loadmovies:{
  `Y set Y+0N 0 (943#"B";",")0:`:ex8_R.txt;
  -1 "loading movie database";
  `X set (10#"F";",")0:`:ex8_movies.txt;
- -1 "loading initial theta value";
+ -1 "loading user preferences";
  `THETA set (10#"F";",")0:`:ex8_theta.txt;
  }
 
@@ -74,22 +74,22 @@ plt:.util.plot[80;40;.util.c10;avg]
 -1 value reverse plt .util.hmap Y;
 
 -1 "reduce the data set size so that this runs faster";
-n:(nu:4;nf:3);nm:5              / n users, n features, n movies
+n:(ni:5;nu:4);nf:3              / n items, n users, n features
+X:X[til nf;til ni]
 THETA:THETA[til nf;til nu]
-X:X[til nf;til nm]
-Y:Y[til nu;til nm]
+Y:Y[til nu;til ni]
 -1 "confirming regularized collaborative filtering cost";
-.util.assert[22.224603725685668] count[Y 0]*.ml.cfcost[();Y;THETA;X]
-.util.assert[31.344056244274213] count[Y 0]*.ml.cfcost[.ml.l2[1.5];Y;THETA;X]
+.util.assert[22.224603725685668] count[Y 0]*.ml.cfcost[();Y;X;THETA]
+.util.assert[31.344056244274213] count[Y 0]*.ml.cfcost[.ml.l2[1.5];Y;X;THETA]
 
-.util.assert[(THETA;X)] .ml.cfcut[n] thetax:2 raze/ (THETA;X)
+.util.assert[(X;THETA)] .ml.cfcut[n] xtheta:2 raze/ (X;THETA)
 
 -1 "checking collaborative filtering gradient computation";
 .util.assert . .util.rnd[1e-6] .ml.checkcfgrad[1e-4;.ml.l2[1.5];n]
 
 -1 "showing gradients";
-show each .ml.cfgrad[.ml.l2[1.5];Y;THETA;X]
-show each  .ml.cfcut[n] last .ml.cfcostgrad[.ml.l2[1.5];n;Y;2 raze/ (THETA;X)]
+show each .ml.cfgrad[.ml.l2[1.5];Y;X;THETA]
+show each .ml.cfcut[n] last .ml.cfcostgrad[.ml.l2[1.5];n;Y;2 raze/ (X;THETA)]
 -1 "loading movie names";
 m:" " sv' 1_'" " vs' read0 `:movie_ids.txt
 -1 "creating my own ratings";
@@ -100,23 +100,22 @@ show {where[0<x]#x}(m!r)
 loadmovies[]
 -1 "joining my ratings to original data set";
 Y,:r
-nu:count Y;nm:count Y 0;nf:10   / n users, n movies, n features
-n:(nu;nf);
+n:(ni:count Y 0;nu:count Y);nf:10   / n items, n users, n features
 -1 "randomly initializing theta";
-thetax:2 raze/ (THETA:-1+nu?/:nf#2f;X:-1+nm?/:nf#2f)
+xtheta:2 raze/ (X:-1+ni?/:nf#2f;THETA:-1+nu?/:nf#2f)
 
 -1 "computing avg rating per movie";
 a:.ml.navg Y
 -1 "learning theta and x values from demeaned data";
-thetax:first .fmincg.fmincg[100;.ml.cfcostgrad[.ml.l2[1f];n;Y-\:a];thetax]
+xtheta:first .fmincg.fmincg[100;.ml.cfcostgrad[.ml.l2[1f];n;Y-\:a];xtheta]
 -1 "predicting ratings";
-p:.ml.mtm . THETAX: .ml.cfcut[n] thetax
+p:.ml.cfpredict . XTHETA: .ml.cfcut[n] xtheta
 -1 "adding mean back to predictions and store my predictions";
 mp:last[p]+a
 -1 "display sorted predictions";
 show `score xdesc ([]movie:m;rating:r;score:mp)
 
 -1 "showing best movies for each learned factor";
-show m idesc each THETAX[1]+\:a
+show m idesc each XTHETA[0]+\:a
 -1 "showing worst movies for each learned factor";
-show m iasc each THETAX[1]+\:a
+show m iasc each XTHETA[0]+\:a
