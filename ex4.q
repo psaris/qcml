@@ -48,4 +48,4 @@ w:-4?where not y=p:1f+.ml.clfova .ml.nnpredict[hgolf;X] .ml.nncut[n] theta
 show flip([]p;y)w
 
 -1 "showing the confusion matrix";
-show .ml.cm[y;p]
+show .util.cm[y;p]

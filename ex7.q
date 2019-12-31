@@ -30,7 +30,7 @@ C:10 .ml.kmeans[X]/-16?/:X
 g:.ml.cgroup[.ml.edist;X;C]
 
 -1 "recovering original image by ungrouping";
-Xr:C@\:.ml.ugrp g
+Xr:C@\:.util.ugrp g
 
 -1 "plotting reconstructed image";
 -1 value .util.plot[128;64;.util.c16;avg] .util.hmap 128 cut .util.grayscale Xr;

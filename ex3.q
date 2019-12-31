@@ -23,11 +23,11 @@ f:first .fmincg.fmincg[20;;THETA 0] .ml.logcostgrad[rf;;X]@
 
 -1 "train one set of parameters for each number";
 THETA:.ml.fitova[f;Y;lbls]
-100*avg y=lbls .ml.clfova .ml.lpredict[X] THETA / what percent did we get correct?
+100*avg y=lbls .ml.clfova .ml.logpredict[X] THETA / what percent did we get correct?
 -1 "showing a few mistakes";
-w:-4?where not y=p:lbls .ml.clfova .ml.lpredict[X] THETA / what percent did we get correct?
+w:-4?where not y=p:lbls .ml.clfova .ml.logpredict[X] THETA / what percent did we get correct?
 -1 (,'/) plt each X@\:/:w;
 show flip([]p;y) w
 
 -1 "showing the confusion matrix";
-show .ml.cm[y;p]
+show .util.cm[y;p]

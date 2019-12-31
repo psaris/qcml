@@ -27,5 +27,5 @@ THETA:.qml.minx[opts;.ml.logcost[();Y;X]enlist::;THETA]
 -1 "raw data";
 show .util.plt data
 -1 "fitted data";
-show .util.plt X,.ml.lpredict[X] THETA
+show .util.plt X,.ml.logpredict[X] THETA
 
